@@ -10,8 +10,7 @@ CURRENT Task:
 TODO:
 
 - main.cpp:
-	- set up opengl context
-	- intialize variables and enter main loop
+	- intialize window separate to rendering window
 
 - shader.cpp and shader.h:
 	- creatation of shaders for rendering
