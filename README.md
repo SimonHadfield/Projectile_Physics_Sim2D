@@ -1,6 +1,12 @@
 # Physics_Sim2D
 C++ physics simulation using opengl
 
+CURRENT Task:
+
+- main.cpp / window.cpp / window.h
+	- set up the glfw window context and display screen using two separate files
+
+
 TODO:
 
 - main.cpp:
@@ -35,3 +41,4 @@ TODO:
 - cmakelists.txt:
 	- define the projects build settings, dependencies and compilation instructions
 	- for cmake it will configure project to include libraries (e.g opengl, glfw)
+
