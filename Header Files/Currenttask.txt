@@ -2,7 +2,7 @@ current task is to initialize object with set position and velocity
 
 tried to use functional programming however need to use OOP for initial position 
 
-- exclude dev folder from avg antivirus 
+- initialize GLEW, consider using imgui as well for realtime debugging
 
 - need to create object with shader 
 - animate manually (separate from physics.cpp)
