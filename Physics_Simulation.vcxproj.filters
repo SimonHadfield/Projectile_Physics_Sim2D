@@ -29,5 +29,11 @@
     <ClInclude Include="Header Files\window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Header Files\physics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Header Files\Currenttask.txt" />
   </ItemGroup>
 </Project>

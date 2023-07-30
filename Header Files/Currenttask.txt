@@ -1,0 +1,7 @@
+current task is to initialize object with set position and velocity
+
+tried to use functional programming however need to use OOP for initial position 
+
+- need to create object with shader 
+- animate manually (separate from physics.cpp)
+- abstract object into class and create object every so many seconds at random position in screen
