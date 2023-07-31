@@ -1,1 +1,2 @@
 C:\dev\Physics_sim\Physics_Simulation\x64\Debug\Physics_Simulation.exe
+A:\dev\Physics_Sim2D\x64\Debug\Physics_Simulation.exe

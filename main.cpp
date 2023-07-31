@@ -7,11 +7,11 @@
 
 int main() {
         
-    int x = 1000;
+    int x = 1;
 	bool displayState = true;
-
+	float offset = 0.1f;
     while (x) {
-        int result = CreateWindow(displayState);
+        int result = CreateWindow(displayState,offset);
         x -= 1;
     }
 	//initialize opengl and create a window
@@ -22,7 +22,7 @@ int main() {
 
 
 	//while (window is open)
-	
+	//
 		//update physics at timestep
 
 		//update projectile's position

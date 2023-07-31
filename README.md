@@ -10,7 +10,7 @@ CURRENT Task:
 TODO:
 
 - main.cpp:
-	- intialize window separate to rendering window
+	- intialize window separate to rendering window: READ OTHER PEOPLE CODE AND LAYOUT (window.cpp getting messy - where do i call gravity and updatepos?)
 
 - shader.cpp and shader.h:
 	- creatation of shaders for rendering
