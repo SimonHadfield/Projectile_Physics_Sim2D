@@ -14,11 +14,12 @@ void gravity(float v_velocity) //vertical velocity
 	v_velocity -= g;
 }
 
-void updatePos(std::vector<float> position, float v_velocity, float h_velocity)
+void updatePos(std::vector<float> anchor_position, float v_velocity, float h_velocity)
 {
 	//2D vector x and y
 	// x += v_v*t, y + h_v+t
-	gravity(v_velocity);
-	position[0] += 0.01;// h_velocity * 1.0f;
-	position[1] += v_velocity*100.0f;
+	//gravity(v_velocity);
+	v_velocity = 0.01f;
+	anchor_position[0] += h_velocity * 1.0f;
+	anchor_position[1] += v_velocity * 1.0f;
 }

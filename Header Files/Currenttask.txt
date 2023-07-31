@@ -2,6 +2,7 @@ current task is to initialize object with set position and velocity
 
 tried to use functional programming however need to use OOP for initial position 
 
+- creating shader line 92 window.cpp / 19.42 Opengl ep7 (finish shader and hopefully animating will come up)
 - updatePos not working, unsure atm
 - apply gravity to triangle, apply tickrate timing independent from framerate
 - see if I can display framerate

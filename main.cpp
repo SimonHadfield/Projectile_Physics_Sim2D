@@ -9,9 +9,8 @@ int main() {
         
     int x = 1;
 	bool displayState = true;
-	float offset = 0.1f;
     while (x) {
-        int result = CreateWindow(displayState,offset);
+        int result = CreateWindow(displayState);
         x -= 1;
     }
 	//initialize opengl and create a window
