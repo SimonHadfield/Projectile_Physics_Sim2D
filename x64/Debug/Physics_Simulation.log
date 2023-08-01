@@ -1,5 +1,3 @@
-﻿  physics.cpp
-  window.cpp
-  Generating Code...
-A:\dev\Physics_Sim2D\window.cpp(93): warning C4715: 'CreateWindow': not all control paths return a value
-  Physics_Simulation.vcxproj -> A:\dev\Physics_Sim2D\x64\Debug\Physics_Simulation.exe
+﻿  window.cpp
+C:\dev\Physics_sim\Physics_Simulation\window.cpp(152): warning C4715: 'CreateWindow': not all control paths return a value
+  Physics_Simulation.vcxproj -> C:\dev\Physics_sim\Physics_Simulation\x64\Debug\Physics_Simulation.exe
