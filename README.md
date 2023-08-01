@@ -5,6 +5,7 @@ CURRENT Task:
 
 - main.cpp / window.cpp / window.h
 	- set up the glfw window context and display screen using two separate files
+	- set up renderer and abstract window functions into classes
 
 
 TODO:

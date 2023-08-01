@@ -1,6 +1,41 @@
 #include "window.h"
 #include "physics.h"
 
+struct ShaderProgramSource
+{
+    std::string VertexSource;
+    std::string FragmentSource;
+};
+
+static ShaderProgramSource ParseShader(const std::string& filepath)
+{
+    std::ifstream stream(filepath);
+
+    enum class ShaderType
+    {
+        NONE = -1, VERTEX = 0, FRAGMENT = 1
+    };
+
+    std::string line;
+    std::stringstream ss[2];
+    ShaderType type = ShaderType::NONE;
+    while (getline(stream, line))
+    {
+        if (line.find("#shader") != std::string::npos)
+        {
+            if (line.find("vertex") != std::string::npos)
+                type = ShaderType::VERTEX;
+            else if (line.find("fragment") != std::string::npos)
+                type = ShaderType::FRAGMENT;
+        }
+        else
+        {
+            ss[(int)type] << line << '\n';
+        }
+    }
+    return { ss[0].str(),ss[1].str() };
+}
+
 static unsigned int CompileShader(unsigned int type,const std::string& source) 
 {
     unsigned int id = glCreateShader(type);
@@ -74,24 +109,36 @@ int CreateWindow(bool displayState) {
     float v_velocity = 0.01f;
     float h_velocity = 0.01f;
 
-    float positions[6] = {
-            -0.5f, -0.5f,
-             0.0f,  0.5f,
-             0.5f, -0.5f
+    float positions[] = {
+            -0.5f, -0.5f, //index 1
+             0.5f, -0.5f, //index 2
+             0.5f,  0.5f, //index 3
+            -0.5f,  0.5f  //index 4
     };
     
+    unsigned int indices[] = {
+        0, 1, 2,
+        2, 3, 0
+    };
+
+    //create buffer
     unsigned int buffer;
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-
-    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), positions, GL_STATIC_DRAW);
     
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
 
-    // moved to basic.shader 7.28 ep8
+    // create index buffer
+    unsigned int ibo;
+    glGenBuffers(1, &ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
 
-    unsigned int shader = CreateShader(vertexShader,fragmentShader);
+    ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
+   
+    unsigned int shader = CreateShader(source.VertexSource,source.FragmentSource);
     glUseProgram(shader);
 
     /* Loop until the user closes the window */
@@ -101,24 +148,23 @@ int CreateWindow(bool displayState) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         //move anchor
-        updatePos(anchor_position, v_velocity, h_velocity);
+        //updatePos(anchor_position, v_velocity, h_velocity);
         //reset anchor if exceeds 1.0f
-        if (anchor_position[0] > 1.0f || anchor_position[1] > 1.0f)
-        {
-            anchor_position[0] = 0.0f;
-            anchor_position[1] = 0.0f;
-        }
+        //if (anchor_position[0] > 1.0f || anchor_position[1] /> /1.0f)
+        //{
+        //    anchor_position[0] = 0.0f;
+        //    anchor_position[1] = 0.0f;
+        //}
         
         //move vertices by anchor_shift
-        positions[0] = -0.5f + anchor_position[0];
-        positions[1] = -0.5f + anchor_position[1];
-        positions[2] = 0.0f + anchor_position[0];
-        positions[3] = 0.5f + anchor_position[1];
-        positions[4] = 0.5f + anchor_position[0];
-        positions[5] = -0.5f + anchor_position[1];
+        //positions[0] = -0.5f;
+        //positions[1] = -0.5f;
+        //positions[2] = 0.0f;
+        //positions[3] = 0.5f;
+        //positions[4] = 0.5f;
+        //positions[5] = -0.5f;
 
-
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
