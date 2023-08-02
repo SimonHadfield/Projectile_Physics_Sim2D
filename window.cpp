@@ -168,6 +168,11 @@ int CreateWindow(bool displayState) {
     ASSERT(location != -1);
     GLCall(glUniform4f(location, 0.8f,0.3f,0.8f,1.0f));
 
+    //unbind everything
+    GLCall(glUseProgram(0));
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
     float r = 0.0f;
     float increment = 0.005f;
 
@@ -177,7 +182,16 @@ int CreateWindow(bool displayState) {
         /* Render here */
         GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
+        //bind
+        GLCall(glUseProgram(shader));
         GLCall(glUniform4f(location, r, 0.3f, 0.8f, 1.0f));
+        
+        GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
+        GLCall(glEnableVertexAttribArray(0));
+        GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
+
+        GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+        
         GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
         if (r > 1.0f)
