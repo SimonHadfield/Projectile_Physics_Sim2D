@@ -6,8 +6,7 @@ tried to use functional programming however need to use OOP for initial position
 
 
 
-- vertex arrrays 5.18 (dont think program will run yet), -> get to renderer vid or at least abstraction prior to retrying animation
-
+- abstraction , -> get to renderer vid or at least abstraction prior to retrying animation
 
 
 - updatePos not working, unsure atm

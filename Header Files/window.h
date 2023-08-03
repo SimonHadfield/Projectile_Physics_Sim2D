@@ -8,6 +8,8 @@
 #include <string>
 #include <sstream>
 
+
+
 int CreateWindow(bool displaystate);
 
 

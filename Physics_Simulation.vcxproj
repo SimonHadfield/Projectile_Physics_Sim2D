@@ -84,13 +84,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="physics.cpp" />
+    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Header Files\IndexBuffer.h" />
     <ClInclude Include="Header Files\physics.h" />
+    <ClInclude Include="Header Files\Renderer.h" />
     <ClInclude Include="Header Files\window.h" />
+    <ClInclude Include="VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Header Files\Currenttask.txt" />
