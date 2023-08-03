@@ -173,11 +173,8 @@ int CreateWindow(bool displayState) {
             /* Render here */
             GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
+            //animation
 
-
-            //animation test start
-            //positions[0] += 0.005f;
-            
             // get change in time
             float time = glfwGetTime();
 
@@ -192,22 +189,8 @@ int CreateWindow(bool displayState) {
                     positions[i] += del_position[0]; //move x coordinate
                 else if (i % 2)
                     positions[i] += del_position[1]; //move y coordinate
-                //positions[i] += del_position;
-            
             }
-            /*if (positions[6] > 1.0f || positions[7] > 1.0f || positions[7] < -1.0f || positions[6] < -1.0f)
-            {
-                positions[0] = -0.05f - 0.5f;
-                positions[1] = -0.05f;
-                positions[2] =  0.05f - 0.5f;
-                positions[3] = -0.05f;
-                positions[4] =  0.05f - 0.5f;
-                positions[5] =  0.05f;
-                positions[6] = -0.05f - 0.5f;
-                positions[7] =  0.05f;
-                //v_velocity = 0;
-            };
-            */
+
             //create buffer
             VertexArray va;
             VertexBuffer vb(positions, 4 * 2 * sizeof(float));
@@ -215,9 +198,6 @@ int CreateWindow(bool displayState) {
             layout.Push<float>(2);
             va.AddBuffer(vb, layout);
 
-
-
-            ///end test
 
 
             //bind
