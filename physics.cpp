@@ -2,24 +2,24 @@
 
 //physics functions
 
-std::vector<float> position = { 0.0, 0.0 };
 
-//gravity - return downward velocity as float
-
-void gravity(float v_velocity) //vertical velocity
+//gravity state
+float gravity(bool grav_on) //vertical velocity
 {
-	// given an initial velocity and timestep, compute final velocity from 10m/s^2 acceleration
-	float g = 10.0;
-	// final_v = initial_v + g * t
-	v_velocity -= g;
+	float g = -0.00025f;
+	return grav_on ? g : 0;
 }
 
-void updatePos(std::vector<float> anchor_position, float v_velocity, float h_velocity)
+//change in position
+std::vector<float> updatePos(float v_velocity, float h_velocity, float del_time, bool grav_on)
 {
 	//2D vector x and y
-	// x += v_v*t, y + h_v+t
-	//gravity(v_velocity);
-	v_velocity = 0.01f;
-	anchor_position[0] += h_velocity * 1.0f;
-	anchor_position[1] += v_velocity * 1.0f;
+	// del_x += v_v*del_time, del_y = h_v+del_time
+	float g = gravity(grav_on);
+	float del_v = g * del_time;
+	std::vector<float> del_position = {h_velocity * del_time, (v_velocity + del_v) * del_time , v_velocity + del_v };
+	
+	return del_position;
 }
+// a*del_time = del_v
+// del_x = v * del_time + additional vel

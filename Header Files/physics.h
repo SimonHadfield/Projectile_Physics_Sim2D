@@ -5,7 +5,7 @@
 #include <vector>
 #include <chrono>
 
-void gravity(float v_velocity);
-void updatePos(std::vector<float> position, float v_velocity, float h_velocity);
+float gravity(float v_velocity);
+std::vector<float> updatePos(float v_velocity, float h_velocity, float del_time, bool grav_on);
 
 #endif

@@ -3,8 +3,11 @@
 
 layout(location = 0) in vec4 position;
 
+uniform vec2 u_position;
+
 void main()
 {
+	//gl_Position = u_position;
 	gl_Position = position;
 };
 

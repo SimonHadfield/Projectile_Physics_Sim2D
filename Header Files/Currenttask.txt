@@ -5,7 +5,7 @@ tried to use functional programming however need to use OOP for initial position
 
 
 
-
+- try creating a uniform to update position per draw call
 - abstraction , -> get to renderer vid or at least abstraction prior to retrying animation
 
 

@@ -1,7 +1,2 @@
-﻿  VertexArray.cpp
-A:\dev\Physics_Sim2D\VertexArray.cpp(32,44): warning C4312: 'type cast': conversion from 'unsigned int' to 'const void *' of greater size
-A:\dev\Physics_Sim2D\VertexArray.cpp(34,3): warning C4312: 'type cast': conversion from 'unsigned int' to 'const void *' of greater size
-  window.cpp
-  Generating Code...
-A:\dev\Physics_Sim2D\window.cpp(202): warning C4715: 'CreateWindow': not all control paths return a value
+﻿  physics.cpp
   Physics_Simulation.vcxproj -> A:\dev\Physics_Sim2D\x64\Debug\Physics_Simulation.exe

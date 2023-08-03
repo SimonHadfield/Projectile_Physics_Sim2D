@@ -119,10 +119,10 @@ int CreateWindow(bool displayState) {
     float h_velocity = 0.01f;
     {
         float positions[] = {
-                -0.5f, -0.5f, //index 1
-                 0.5f, -0.5f, //index 2
-                 0.5f,  0.5f, //index 3
-                -0.5f,  0.5f  //index 4
+                -0.05f - 0.5f, -0.05f, //index 1
+                 0.05f - 0.5f, -0.05f, //index 2
+                 0.05f - 0.5f,  0.05f, //index 3
+                -0.05f - 0.5f,  0.05f  //index 4
         };
 
         unsigned int indices[] = {
@@ -152,9 +152,11 @@ int CreateWindow(bool displayState) {
         unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
         GLCall(glUseProgram(shader));
 
+        //color uniform
         int location = glGetUniformLocation(shader, "u_Color");
         ASSERT(location != -1);
         GLCall(glUniform4f(location, 0.8f, 0.3f, 0.8f, 1.0f));
+
 
         //unbind everything
         GLCall(glBindVertexArray(0));
@@ -170,6 +172,53 @@ int CreateWindow(bool displayState) {
         {
             /* Render here */
             GLCall(glClear(GL_COLOR_BUFFER_BIT));
+
+
+
+            //animation test start
+            //positions[0] += 0.005f;
+            
+            // get change in time
+            float time = glfwGetTime();
+
+            float del_time = 0.50f;
+
+            std::vector<float> del_position = updatePos(v_velocity, h_velocity, del_time, true);
+            v_velocity = del_position[2];
+
+            for (int i = 0; i < (sizeof(positions) / sizeof(float)); i++)
+            {
+                if (!(i % 2))
+                    positions[i] += del_position[0]; //move x coordinate
+                else if (i % 2)
+                    positions[i] += del_position[1]; //move y coordinate
+                //positions[i] += del_position;
+            
+            }
+            /*if (positions[6] > 1.0f || positions[7] > 1.0f || positions[7] < -1.0f || positions[6] < -1.0f)
+            {
+                positions[0] = -0.05f - 0.5f;
+                positions[1] = -0.05f;
+                positions[2] =  0.05f - 0.5f;
+                positions[3] = -0.05f;
+                positions[4] =  0.05f - 0.5f;
+                positions[5] =  0.05f;
+                positions[6] = -0.05f - 0.5f;
+                positions[7] =  0.05f;
+                //v_velocity = 0;
+            };
+            */
+            //create buffer
+            VertexArray va;
+            VertexBuffer vb(positions, 4 * 2 * sizeof(float));
+            VertexBufferLayout layout;
+            layout.Push<float>(2);
+            va.AddBuffer(vb, layout);
+
+
+
+            ///end test
+
 
             //bind
             GLCall(glUseProgram(shader));
