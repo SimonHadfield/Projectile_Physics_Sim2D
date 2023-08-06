@@ -113,10 +113,23 @@ int CreateWindow(bool displayState) {
 
     std::cout << glGetString(GL_VERSION) << std::endl;
     
-    //initialize position and velocity of object
-    std::vector<float> anchor_position = { 0.1f,0.1f }; //initialize triangle position x y
-    float v_velocity = 0.01f;
-    float h_velocity = 0.01f;
+    //velocity of object
+    float v_velocity = 0.00f;
+    float h_velocity = 0.00f;
+
+    bool object_stationary = true;
+
+    if (object_stationary)
+    {
+        v_velocity = 0.00f;
+        h_velocity = 0.00f;
+    }
+    else if (!object_stationary)
+    {
+        v_velocity = 0.01f;
+        h_velocity = 0.01f;
+    }
+
     {
         float positions[] = {
                 -0.05f - 0.5f, -0.05f, //index 1
@@ -166,10 +179,27 @@ int CreateWindow(bool displayState) {
 
         float r = 0.0f;
         float increment = 0.005f;
+        bool grav_on = false;
 
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
+            //userinput
+            std::cout << "Grav state : " << grav_on << std::endl;
+            if ((glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) && !grav_on)
+                grav_on = true;
+            //else if ((glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) && grav_on)
+            //    grav_on = false;
+            if ((glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS))
+            {
+                v_velocity = 0.015f; h_velocity = 0.008f; grav_on = true;
+            }
+            if ((glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS))
+            {
+                v_velocity = 0.00f; h_velocity = 0.00f; grav_on = false;
+                
+            }
+
             /* Render here */
             GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
@@ -180,7 +210,7 @@ int CreateWindow(bool displayState) {
 
             float del_time = 0.50f;
 
-            std::vector<float> del_position = updatePos(v_velocity, h_velocity, del_time, true);
+            std::vector<float> del_position = updatePos(v_velocity, h_velocity, del_time, grav_on);
             v_velocity = del_position[2];
 
             for (int i = 0; i < (sizeof(positions) / sizeof(float)); i++)
