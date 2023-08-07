@@ -1,5 +1,11 @@
-﻿  main.cpp
-glew32s.lib(glew.obj) : warning LNK4099: PDB '' was not found with 'glew32s.lib(glew.obj)' or at ''; linking object as if no debug info
-LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
-LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
+﻿  Shader.cpp
+  IndexBuffer.cpp
+  Renderer.cpp
+  VertexArray.cpp
+A:\dev\Projectile_Physics_Sim2D\VertexArray.cpp(26,3): warning C4312: 'type cast': conversion from 'unsigned int' to 'const void *' of greater size
+  VertexBuffer.cpp
+  window.cpp
+A:\dev\Projectile_Physics_Sim2D\window.cpp(128,24): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  Generating Code...
+A:\dev\Projectile_Physics_Sim2D\window.cpp(176): warning C4715: 'CreateWindow': not all control paths return a value
   Physics_Simulation.vcxproj -> A:\dev\Projectile_Physics_Sim2D\x64\Debug\Physics_Simulation.exe

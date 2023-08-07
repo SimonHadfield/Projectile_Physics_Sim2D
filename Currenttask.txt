@@ -1,0 +1,5 @@
+17.35 on shader abstraction (started creating renderer by mistake)
+
+get to renderer then attempt to include more shaders to shape environment
+
+multiple objects does come up late which may be helpful

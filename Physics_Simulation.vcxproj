@@ -84,6 +84,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="physics.cpp" />
@@ -93,15 +94,17 @@
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Header Files\IndexBuffer.h" />
-    <ClInclude Include="Header Files\physics.h" />
-    <ClInclude Include="Header Files\Renderer.h" />
-    <ClInclude Include="Header Files\VertexArray.h" />
-    <ClInclude Include="Header Files\VertexBufferLayout.h" />
-    <ClInclude Include="Header Files\window.h" />
+    <ClInclude Include="IndexBuffer.h" />
+    <ClInclude Include="physics.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="VertexArray.h" />
+    <ClInclude Include="VertexBufferLayout.h" />
+    <ClInclude Include="window.h" />
     <ClInclude Include="VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="README.md" />
     <None Include="res\shaders\Basic.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

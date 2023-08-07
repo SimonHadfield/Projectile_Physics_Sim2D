@@ -3,7 +3,7 @@
 
 layout(location = 0) in vec4 position;
 
-uniform vec2 u_position;
+//uniform vec2 u_position;
 
 void main()
 {
