@@ -58,14 +58,26 @@ int CreateWindow(bool displayState) {
     }
 
     {
+        //square projectile
         float positions[] = {
-                -0.05f - 0.5f, -0.05f, //index 1
-                 0.05f - 0.5f, -0.05f, //index 2
-                 0.05f - 0.5f,  0.05f, //index 3
-                -0.05f - 0.5f,  0.05f  //index 4
+                -0.55f, -0.05f, //index 1
+                -0.48f, -0.05f, //index 2
+                -0.48f,  0.05f, //index 3
+                -0.55f,  0.05f  //index 4
+        };
+        unsigned int indices[] = {
+            0, 1, 2,
+            2, 3, 0
         };
 
-        unsigned int indices[] = {
+        //floor
+        float fl_positions[] = {
+                -1.55f, -1.05f, //index 1
+                -1.45f, -1.05f, //index 2
+                -1.45f,  1.05f, //index 3
+                -1.55f,  1.05f  //index 4
+        };
+        unsigned int fl_indices[] = {
             0, 1, 2,
             2, 3, 0
         };
@@ -75,7 +87,8 @@ int CreateWindow(bool displayState) {
         GLCall(glGenVertexArrays(1, &vao));
         GLCall(glBindVertexArray(vao));
 
-        //create buffer
+        ///// projectile
+        //create buffer - projectile
         VertexArray va;
         VertexBuffer vb(positions, 4 * 2 * sizeof(float));
 
@@ -83,7 +96,7 @@ int CreateWindow(bool displayState) {
         layout.Push<float>(2);
         va.AddBuffer(vb,layout);
 
-        // create index buffer
+        // create index buffer - projectile
         IndexBuffer ib(indices, 6);
 
         Shader shader("res/shaders/Basic.shader");
@@ -97,15 +110,52 @@ int CreateWindow(bool displayState) {
         ib.Unbind();
         shader.Unbind();
 
+
+        ///// floor
+        
+        //create vertex array (vao)
+        unsigned int fl_vao;
+        GLCall(glGenVertexArrays(1, &fl_vao));
+        GLCall(glBindVertexArray(fl_vao));
+        
+        //create buffer - floor
+        VertexArray fl_va;
+        VertexBuffer fl_vb(fl_positions, 4 * 2 * sizeof(float));
+
+        VertexBufferLayout fl_layout;
+        fl_layout.Push<float>(2);
+        fl_va.AddBuffer(fl_vb, fl_layout);
+
+        // create index buffer - floor
+        IndexBuffer fl_ib(fl_indices, 6);
+
+        Shader fl_shader("res/shaders/Basic.shader");
+        fl_shader.Bind();
+        //color uniform
+        fl_shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
+
+        //unbind everything
+        fl_va.Unbind();
+        fl_vb.Unbind();
+        fl_ib.Unbind();
+        fl_shader.Unbind();
+
+        /////
+
         float r = 0.0f;
         float increment = 0.005f;
         bool grav_on = false;
+
+        //time - fps counter
+        double prevTime = 0.0;
+        double crntTime = 0.0;
+        double del_time;
+        unsigned int counter = 0;
 
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
             // userinput
-            std::cout << "Grav state : " << grav_on << std::endl;
             if ((glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) && !grav_on)
                 grav_on = true;
             //else if ((glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) && grav_on)
@@ -124,10 +174,24 @@ int CreateWindow(bool displayState) {
             GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
 
-            // Animation:
-            float time = glfwGetTime(); // get change in time
-            float del_time = 0.50f;
 
+            //calculate fps
+            crntTime = glfwGetTime(); // get change in time
+            del_time = crntTime - prevTime;
+            std::cout << del_time << std::endl;
+            counter++;
+            if (del_time >= 1.0 / 5.0)
+            {
+                std::string FPS = std::to_string((1.0 / del_time) * counter);
+                std::string ms = std::to_string((del_time / counter) * 1000);
+                std::string newTitle = FPS + "FPS / " + ms + "ms";
+                glfwSetWindowTitle(window, newTitle.c_str());
+                prevTime = crntTime;
+                counter = 0;
+            }
+
+            del_time = 0.2;
+            // Animation:
             std::vector<float> del_position = updatePos(v_velocity, h_velocity, del_time, grav_on);
             v_velocity = del_position[2];
 
@@ -139,7 +203,7 @@ int CreateWindow(bool displayState) {
                     positions[i] += del_position[1]; //move y coordinate
             }
 
-            //create buffer
+            //create buffer - square
             VertexArray va;
             VertexBuffer vb(positions, 4 * 2 * sizeof(float));
             VertexBufferLayout layout;

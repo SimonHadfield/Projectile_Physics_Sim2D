@@ -1,11 +1,4 @@
-﻿  Shader.cpp
-  IndexBuffer.cpp
-  Renderer.cpp
-  VertexArray.cpp
-A:\dev\Projectile_Physics_Sim2D\VertexArray.cpp(26,3): warning C4312: 'type cast': conversion from 'unsigned int' to 'const void *' of greater size
-  VertexBuffer.cpp
-  window.cpp
-A:\dev\Projectile_Physics_Sim2D\window.cpp(128,24): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-  Generating Code...
-A:\dev\Projectile_Physics_Sim2D\window.cpp(176): warning C4715: 'CreateWindow': not all control paths return a value
+﻿  window.cpp
+A:\dev\Projectile_Physics_Sim2D\window.cpp(195,81): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+A:\dev\Projectile_Physics_Sim2D\window.cpp(240): warning C4715: 'CreateWindow': not all control paths return a value
   Physics_Simulation.vcxproj -> A:\dev\Projectile_Physics_Sim2D\x64\Debug\Physics_Simulation.exe

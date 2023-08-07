@@ -3,3 +3,5 @@
 get to renderer then attempt to include more shaders to shape environment
 
 multiple objects does come up late which may be helpful
+
+cant get multiple objects to render.
