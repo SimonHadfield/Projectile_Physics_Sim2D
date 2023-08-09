@@ -57,25 +57,33 @@ int CreateWindow(bool displayState) {
         h_velocity = 0.01f;
     }
 
-    {
+    { 
         //square projectile
         float positions[] = {
-                -0.55f, -0.05f, //index 1
-                -0.48f, -0.05f, //index 2
-                -0.48f,  0.05f, //index 3
-                -0.55f,  0.05f  //index 4
+                -0.55f, -0.05f, //index 0 (x,y)
+                -0.48f, -0.05f, //index 1
+                -0.48f,  0.05f, //index 2
+                -0.55f,  0.05f  //index 3
         };
         unsigned int indices[] = {
             0, 1, 2,
             2, 3, 0
         };
 
-        //floor
+        //platform pos - same top height as bottom of projectile, bottom height -1.0f
+        float pl_positions[] = {
+                -1.00f,  -1.00f, //index 0
+                -0.40f,  -1.00f, //index 1
+                -0.40f,  -0.05f, //index 2
+                -1.00f,  -0.05f  //index 3
+        };
+
+        //floor pos
         float fl_positions[] = {
-                -1.55f, -1.05f, //index 1
-                -1.45f, -1.05f, //index 2
-                -1.45f,  1.05f, //index 3
-                -1.55f,  1.05f  //index 4
+                -1.00f,  -1.00f, //index 0
+                 1.40f,  -1.00f, //index 1
+                 1.40f,  -0.70f, //index 2
+                -1.00f,  -0.70f  //index 3
         };
         unsigned int fl_indices[] = {
             0, 1, 2,
@@ -88,9 +96,10 @@ int CreateWindow(bool displayState) {
         GLCall(glBindVertexArray(vao));
 
         ///// projectile
+        // 
         //create buffer - projectile
-        VertexArray va;
-        VertexBuffer vb(positions, 4 * 2 * sizeof(float));
+        VertexArray va; // square vertex array
+        VertexBuffer vb(positions, 4 * 2 * sizeof(float)); //vertex buffer
 
         VertexBufferLayout layout;
         layout.Push<float>(2);
@@ -102,7 +111,7 @@ int CreateWindow(bool displayState) {
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
         //color uniform
-        shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
+        shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f); //rgba
 
         //unbind everything
         va.Unbind();
@@ -110,6 +119,29 @@ int CreateWindow(bool displayState) {
         ib.Unbind();
         shader.Unbind();
 
+        ///// platform
+        // 
+        //create buffer - projectile
+        VertexArray pl_va; // square vertex array
+        VertexBuffer pl_vb(pl_positions, 4 * 2 * sizeof(float)); //vertex buffer
+
+        VertexBufferLayout pl_layout;
+        pl_layout.Push<float>(2);
+        pl_va.AddBuffer(pl_vb, pl_layout);
+
+        // create index buffer - projectile
+        IndexBuffer pl_ib(indices, 6);
+
+        Shader pl_shader("res/shaders/Basic.shader");
+        pl_shader.Bind();
+        //color uniform
+        pl_shader.SetUniform4f("u_Color", 0.9f, 0.3f, 0.8f, 1.0f);
+
+        //unbind everything
+        pl_va.Unbind();
+        pl_vb.Unbind();
+        pl_ib.Unbind();
+        pl_shader.Unbind();
 
         ///// floor
         
@@ -178,7 +210,7 @@ int CreateWindow(bool displayState) {
             //calculate fps
             crntTime = glfwGetTime(); // get change in time
             del_time = crntTime - prevTime;
-            std::cout << del_time << std::endl;
+         
             counter++;
             if (del_time >= 1.0 / 5.0)
             {
@@ -212,12 +244,47 @@ int CreateWindow(bool displayState) {
 
             //bind
             shader.Bind();
-            shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
-
+            shader.SetUniform4f("u_Color", r, 0.0f, 1.0f, 1.0f);
             va.Bind();
             ib.Bind();
 
             GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+
+            //create array and buffer - platform
+            VertexArray pl_va;
+            VertexBuffer pl_vb(pl_positions, 4 * 2 * sizeof(float));
+            VertexBufferLayout pl_layout;
+            pl_layout.Push<float>(2);
+            pl_va.AddBuffer(pl_vb, pl_layout);
+
+            //bind shader
+            pl_shader.Bind();
+            pl_shader.SetUniform4f("u_Color", 0.3f, 0.1f, 0.3f, 1.0f);
+            pl_va.Bind();
+            pl_ib.Bind();
+
+            GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+
+            //create array and buffer - floor
+            VertexArray fl_va;
+            VertexBuffer fl_vb(fl_positions, 4 * 2 * sizeof(float));
+            VertexBufferLayout fl_layout;
+            fl_layout.Push<float>(2);
+            fl_va.AddBuffer(fl_vb, fl_layout);
+
+            //bind shader
+            fl_shader.Bind();
+            fl_shader.SetUniform4f("u_Color", 0.3f, 0.1f, 0.3f, 1.0f);
+            fl_va.Bind();
+            fl_ib.Bind();
+
+            GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+
+            //unbind everything
+            fl_va.Unbind();
+            fl_vb.Unbind();
+            fl_ib.Unbind();
+            fl_shader.Unbind();
 
             if (r > 1.0f)
                 increment = -0.005f;
