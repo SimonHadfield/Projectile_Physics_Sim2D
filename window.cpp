@@ -7,6 +7,8 @@
 
 #include "Shader.h"
 
+#include "stb_image/stb_image.h"
+
 int CreateWindow(bool displayState) {
     std::cout << displayState << std::endl;
     if (!displayState)
