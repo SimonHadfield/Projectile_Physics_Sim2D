@@ -3,12 +3,13 @@
 
 layout(location = 0) in vec4 position;
 
-//uniform vec2 u_position;
+uniform mat4 u_MVP;
+uniform mat4 transformationMatrix; //transformation for animation
 
 void main()
 {
-	//gl_Position = u_position;
-	gl_Position = position;
+	vec4 translated_position = (transformationMatrix * position);
+	gl_Position = u_MVP * translated_position; //apply transformationMatrix then MVP 
 };
 
 #shader fragment

@@ -3,9 +3,9 @@
 
 #include <iostream>
 #include <vector>
-#include <chrono>
+#include "glm/glm.hpp"
 
 float gravity(float v_velocity);
-std::vector<float> updatePos(float v_velocity, float h_velocity, float del_time, bool grav_on);
+glm::vec2 updatePos(glm::vec2 velocity, float del_time, bool grav_on);
 
 #endif

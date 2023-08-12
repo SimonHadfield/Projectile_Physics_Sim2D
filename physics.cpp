@@ -1,7 +1,7 @@
 #include "physics.h"
 
 //physics functions
-
+#include "glm/glm.hpp"
 
 //gravity state
 float gravity(bool grav_on) //vertical velocity
@@ -11,15 +11,16 @@ float gravity(bool grav_on) //vertical velocity
 }
 
 //change in position
-std::vector<float> updatePos(float v_velocity, float h_velocity, float del_time, bool grav_on)
+glm::vec2 updatePos(glm::vec2 velocity, float del_Time, bool grav_on)
 {
 	//2D vector x and y
-	// del_x += v_v*del_time, del_y = h_v+del_time
+	// del_x += v_v*del_Time, del_y = h_v+del_Time
 	float g = gravity(grav_on);
-	float del_v = g * del_time;
-	std::vector<float> del_position = {h_velocity * del_time, (v_velocity + del_v) * del_time , v_velocity + del_v };
+	float del_v = g * del_Time;
+	velocity.y += del_v;
+	glm::vec2 del_position(velocity.x * del_Time, velocity.y * del_Time);
 	
 	return del_position;
 }
-// a*del_time = del_v
-// del_x = v * del_time + additional vel
+// a*del_Time = del_v
+// del_x = v * del_Time + additional vel

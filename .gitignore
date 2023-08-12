@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/Physics_Simulation/FileContentIndex/6493ee42-d34c-4842-b9dd-af3f90d46274.vsidx
+/.vs/Physics_Simulation/v17/ipch/AutoPCH/2d10f9bd433c13f2/WINDOW.ipch
+/.vs/Physics_Simulation/v17/ipch/AutoPCH/9db864a7db85efb7/SHADER.ipch
+/.vs/Physics_Simulation/v17/ipch/AutoPCH/a0e74351e2c4a96/INDEXBUFFER.ipch
+/.vs/Physics_Simulation/v17/ipch/AutoPCH/145021bf1eb7b1a5/RENDERER.ipch
+/.vs/Physics_Simulation/v17/Browse.VC.db

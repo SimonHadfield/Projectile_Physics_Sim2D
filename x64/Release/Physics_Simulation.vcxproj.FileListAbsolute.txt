@@ -1,1 +1,2 @@
 A:\dev\Projectile_Physics_Sim2D\x64\Release\Physics_Simulation.exe
+C:\dev\Physics_sim\Physics_Simulation\x64\Release\Physics_Simulation.exe

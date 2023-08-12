@@ -7,7 +7,8 @@
 
 #include "Shader.h"
 
-#include "stb_image/stb_image.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 int CreateWindow(bool displayState) {
     std::cout << displayState << std::endl;
@@ -43,20 +44,19 @@ int CreateWindow(bool displayState) {
     std::cout << glGetString(GL_VERSION) << std::endl;
     
     //velocity of object
-    float v_velocity = 0.00f;
-    float h_velocity = 0.00f;
-
+    glm::vec2 velocity(0.0f, 0.0f);
+    glm::vec2 offset_position(0.0f, 0.0f);
     bool object_stationary = true;
 
     if (object_stationary)
     {
-        v_velocity = 0.00f;
-        h_velocity = 0.00f;
+        velocity.x = 0.0f;
+        velocity.y = 0.0f;
     }
     else if (!object_stationary)
     {
-        v_velocity = 0.01f;
-        h_velocity = 0.01f;
+        velocity.x = 0.01f;
+        velocity.y = 0.01f;
     }
 
     { 
@@ -74,18 +74,18 @@ int CreateWindow(bool displayState) {
 
         //platform pos - same top height as bottom of projectile, bottom height -1.0f
         float pl_positions[] = {
-                -1.00f,  -1.00f, //index 0
-                -0.40f,  -1.00f, //index 1
+                -2.00f,  -2.00f, //index 0
+                -0.40f,  -2.00f, //index 1
                 -0.40f,  -0.05f, //index 2
-                -1.00f,  -0.05f  //index 3
+                -2.00f,  -0.05f  //index 3
         };
 
         //floor pos
         float fl_positions[] = {
-                -1.00f,  -1.00f, //index 0
-                 1.40f,  -1.00f, //index 1
-                 1.40f,  -0.70f, //index 2
-                -1.00f,  -0.70f  //index 3
+                -2.00f,  -2.00f, //index 0
+                 2.00f,  -2.00f, //index 1
+                 2.00f,  -0.70f, //index 2
+                -2.00f,  -0.70f  //index 3
         };
         unsigned int fl_indices[] = {
             0, 1, 2,
@@ -97,6 +97,8 @@ int CreateWindow(bool displayState) {
         GLCall(glGenVertexArrays(1, &vao));
         GLCall(glBindVertexArray(vao));
 
+        glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f); //projection matrix
+        
         ///// projectile
         // 
         //create buffer - projectile
@@ -110,10 +112,12 @@ int CreateWindow(bool displayState) {
         // create index buffer - projectile
         IndexBuffer ib(indices, 6);
 
+
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
         //color uniform
         shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f); //rgba
+        shader.SetUniformMat4f("u_MVP", proj);
 
         //unbind everything
         va.Unbind();
@@ -138,6 +142,7 @@ int CreateWindow(bool displayState) {
         pl_shader.Bind();
         //color uniform
         pl_shader.SetUniform4f("u_Color", 0.9f, 0.3f, 0.8f, 1.0f);
+        pl_shader.SetUniformMat4f("u_MVP", proj);
 
         //unbind everything
         pl_va.Unbind();
@@ -167,6 +172,7 @@ int CreateWindow(bool displayState) {
         fl_shader.Bind();
         //color uniform
         fl_shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
+        fl_shader.SetUniformMat4f("u_MVP", proj);
 
         //unbind everything
         fl_va.Unbind();
@@ -180,11 +186,20 @@ int CreateWindow(bool displayState) {
         float increment = 0.005f;
         bool grav_on = false;
 
-        //time - fps counter
-        double prevTime = 0.0;
+
+        //time - fps counter, fixedTimeStep
+        double fps_prevTime = glfwGetTime();
+        double fps_crntTime = 0.0;
+        double fps_frameTime;
+        double prevTime = glfwGetTime();
         double crntTime = 0.0;
-        double del_time;
+        double frameTime;
         unsigned int counter = 0;
+        glm::mat4 translationMatrix = glm::mat4(1.0f);
+        
+        //animation timesteps
+        const double fixedTimeStep = 1.0 / 64.0; //30 frames per second
+        double accumulator = 0.0;
 
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
@@ -196,45 +211,45 @@ int CreateWindow(bool displayState) {
             //    grav_on = false;
             if ((glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS))
             {
-                v_velocity = 0.015f; h_velocity = 0.008f; grav_on = true;
+                velocity.x = 0.015f; velocity.y = 0.008f; grav_on = true;
             }
             if ((glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS))
             {
-                v_velocity = 0.00f; h_velocity = 0.00f; grav_on = false;
-                
+                velocity.x = 0.0f; velocity.y = 0.0f; grav_on = false;
             }
 
             /* Render here */
             GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
 
-
+            
             //calculate fps
-            crntTime = glfwGetTime(); // get change in time
-            del_time = crntTime - prevTime;
-         
+            fps_crntTime = glfwGetTime(); // get change in time
+            fps_frameTime = fps_crntTime - fps_prevTime;
             counter++;
-            if (del_time >= 1.0 / 5.0)
+            if (fps_frameTime >= 1.0 / 5.0)
             {
-                std::string FPS = std::to_string((1.0 / del_time) * counter);
-                std::string ms = std::to_string((del_time / counter) * 1000);
+                std::string FPS = std::to_string((1.0 / fps_frameTime) * counter);
+                std::string ms = std::to_string((fps_frameTime / counter) * 1000);
                 std::string newTitle = FPS + "FPS / " + ms + "ms";
                 glfwSetWindowTitle(window, newTitle.c_str());
-                prevTime = crntTime;
+                fps_prevTime = fps_crntTime;
                 counter = 0;
             }
 
-            del_time = 0.2;
             // Animation:
-            std::vector<float> del_position = updatePos(v_velocity, h_velocity, del_time, grav_on);
-            v_velocity = del_position[2];
-
-            for (int i = 0; i < (sizeof(positions) / sizeof(float)); i++)
+            crntTime = glfwGetTime(); // get change in time
+            frameTime = crntTime - prevTime;
+            accumulator += frameTime;
+            while (accumulator >= fixedTimeStep)
             {
-                if (!(i % 2))
-                    positions[i] += del_position[0]; //move x coordinate
-                else if (i % 2)
-                    positions[i] += del_position[1]; //move y coordinate
+                glm::vec2 del_position = updatePos(velocity, fixedTimeStep, grav_on);
+                offset_position.x += del_position.x; offset_position.y += del_position.y;
+                velocity.x = del_position.x / fixedTimeStep;
+                velocity.y = del_position.y / fixedTimeStep;
+                translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(offset_position, 0.0f)); //translation matrix
+
+                accumulator -= fixedTimeStep;
             }
 
             //create buffer - square
@@ -247,6 +262,7 @@ int CreateWindow(bool displayState) {
             //bind
             shader.Bind();
             shader.SetUniform4f("u_Color", r, 0.0f, 1.0f, 1.0f);
+            shader.SetUniformMat4f("transformationMatrix", translationMatrix);
             va.Bind();
             ib.Bind();
 
@@ -262,6 +278,7 @@ int CreateWindow(bool displayState) {
             //bind shader
             pl_shader.Bind();
             pl_shader.SetUniform4f("u_Color", 0.3f, 0.1f, 0.3f, 1.0f);
+            pl_shader.SetUniformMat4f("transformationMatrix", glm::mat4(1.0f)); // don't transform platform
             pl_va.Bind();
             pl_ib.Bind();
 
@@ -277,6 +294,7 @@ int CreateWindow(bool displayState) {
             //bind shader
             fl_shader.Bind();
             fl_shader.SetUniform4f("u_Color", 0.3f, 0.1f, 0.3f, 1.0f);
+            fl_shader.SetUniformMat4f("transformationMatrix", glm::mat4(1.0f)); // don't transform floor
             fl_va.Bind();
             fl_ib.Bind();
 
@@ -289,9 +307,9 @@ int CreateWindow(bool displayState) {
             fl_shader.Unbind();
 
             if (r > 1.0f)
-                increment = -0.005f;
+                increment = -0.0005f;
             else if (r < 0.0f)
-                increment = 0.005f;
+                increment = 0.0005f;
 
             r += increment;
 
