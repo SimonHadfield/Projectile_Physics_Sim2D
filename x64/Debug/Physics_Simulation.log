@@ -1,14 +1,14 @@
 ﻿  window.cpp
-C:\dev\Physics_sim\Physics_Simulation\window.cpp(98,107): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\dev\Physics_sim\Physics_Simulation\window.cpp(267,45): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+C:\dev\Physics_sim\Physics_Simulation\window.cpp(84,107): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\dev\Physics_sim\Physics_Simulation\window.cpp(260,45): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\dev\Physics_sim\Physics_Simulation\window.cpp(268,45): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+C:\dev\Physics_sim\Physics_Simulation\window.cpp(261,45): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\dev\Physics_sim\Physics_Simulation\window.cpp(346): warning C4715: 'CreateWindow': not all control paths return a value
+C:\dev\Physics_sim\Physics_Simulation\window.cpp(343): warning C4715: 'CreateWindow': not all control paths return a value
   Physics_Simulation.vcxproj -> C:\dev\Physics_sim\Physics_Simulation\x64\Debug\Physics_Simulation.exe

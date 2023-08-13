@@ -10,12 +10,7 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-// AABB axis aligned bounding box
-struct AABB
-{
-    glm::vec2 min;
-    glm::vec2 max;
-};
+
 
 int CreateWindow(bool displayState) {
     std::cout << displayState << std::endl;
@@ -75,10 +70,10 @@ int CreateWindow(bool displayState) {
 
         //define initial square vertex positions
         float positions[] = {
-                x_origin,           y_origin,           //index 0 - bottom left (origin: x,y)
-                x_origin + length,  y_origin,           //index 1 - bottom right 
-                x_origin + length,  y_origin + length,  //index 2 - top right
-                x_origin,           y_origin + length   //index 3 - top left
+                x_origin,           y_origin,                    //index 0 - bottom left (origin: x,y)
+                x_origin + length,  y_origin,                    //index 1 - bottom right 
+                x_origin + length,  y_origin + length,           //index 2 - top right
+                x_origin,           y_origin + length            //index 3 - top left
         };
         unsigned int indices[] = {
             0, 1, 2,
@@ -86,16 +81,10 @@ int CreateWindow(bool displayState) {
         };
 
         //platform pos - same top height as bottom of projectile, bottom height -1.0f
+        float bottom_screen = -1.5f, left_screen = -2.0f, right_screen = 2.0f, width = 0.8f, height = 1.45; //define platform relative to screensize and height/width
+        AABB pl_AABB = { glm::vec2(left_screen, bottom_screen), glm::vec2(left_screen + width, bottom_screen + height) }; //define AABB for platform
+        std::cout << "Is there a collision: " << AABBIntersect(squareAABB, pl_AABB) << std::endl;
 
-        AABB pl_AABB = { glm::vec2(x_origin,y_origin), glm::vec2(x_origin + length, y_origin + length) }; //define AABB for square
-        //float pl_positions[] = {
-        //        -2.00f,  -2.00f, //index 0
-        //        -0.40f,  -2.00f, //index 1
-        //        -0.40f,  -0.05f, //index 2
-        //        -2.00f,  -0.05f  //index 3
-        //};
-
-        float bottom_screen = -1.5f, left_screen = -2.0f, right_screen = 2.0f, width = 0.8f, height = 1.45;
         float pl_positions[] = {
                  left_screen, bottom_screen,                     //index 0 - bottom left (origin: x,y)
                  left_screen + width, bottom_screen,             //index 1 - bottom right 
@@ -103,12 +92,14 @@ int CreateWindow(bool displayState) {
                  left_screen, bottom_screen + height             //index 3 - top left
         };
 
-        //floor pos
+        //floor 
+        float fl_height = 1.3f;
+        AABB fl_AABB = { glm::vec2(left_screen, bottom_screen), glm::vec2(right_screen, bottom_screen + fl_height) }; //define AABB for platform
         float fl_positions[] = {
-                -2.00f,  -2.00f, //index 0
-                 2.00f,  -2.00f, //index 1
-                 2.00f,  -0.70f, //index 2
-                -2.00f,  -0.70f  //index 3
+                left_screen,    bottom_screen,                   //index 0 - bottom left (origin: x,y)
+                right_screen,   bottom_screen,                   //index 1 - bottom right 
+                right_screen,   bottom_screen + fl_height,       //index 2 - top right
+                left_screen,    bottom_screen + fl_height        //index 3 - top left
         };
         unsigned int fl_indices[] = {
             0, 1, 2,
@@ -256,6 +247,8 @@ int CreateWindow(bool displayState) {
                 counter = 0;
             }
 
+            std::cout << "Collision square - platform: " << AABBIntersect(squareAABB, pl_AABB) << std::endl;
+            std::cout << "Collision square - floor: " << AABBIntersect(squareAABB, fl_AABB) << std::endl;
             // Animation:
             crntTime = glfwGetTime(); // get change in time
             frameTime = crntTime - prevTime;
@@ -263,10 +256,14 @@ int CreateWindow(bool displayState) {
             while (accumulator >= fixedTimeStep)
             {
                 glm::vec2 del_position = updatePos(velocity, fixedTimeStep, grav_on);
-                offset_position.x += del_position.x; offset_position.y += del_position.y;
+                offset_position.x += del_position.x; offset_position.y += del_position.y; // add change in position to current offset from origin 
                 velocity.x = del_position.x / fixedTimeStep;
                 velocity.y = del_position.y / fixedTimeStep;
                 translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(offset_position, 0.0f)); //translation matrix
+                
+                //update AABBs
+                squareAABB.min = glm::vec2(translationMatrix * glm::vec4(squareAABB.min, 0.0f, 1.0f));
+                squareAABB.max = glm::vec2(translationMatrix * glm::vec4(squareAABB.max, 0.0f, 1.0f));
 
                 accumulator -= fixedTimeStep;
             }
