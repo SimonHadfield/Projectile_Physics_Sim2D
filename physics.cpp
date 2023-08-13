@@ -22,5 +22,7 @@ glm::vec2 updatePos(glm::vec2 velocity, float del_Time, bool grav_on)
 	
 	return del_position;
 }
-// a*del_Time = del_v
-// del_x = v * del_Time + additional vel
+
+//bool AABBIntersect(const AABB& a, const AABB& b) {
+//	return (a.min.x <= b.max.x && a.max.x >= b.min.x) && (a.min.x <= b.max.x && a.max.x >= b.min.x);
+//}

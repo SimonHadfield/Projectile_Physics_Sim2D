@@ -10,6 +10,13 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+// AABB axis aligned bounding box
+struct AABB
+{
+    glm::vec2 min;
+    glm::vec2 max;
+};
+
 int CreateWindow(bool displayState) {
     std::cout << displayState << std::endl;
     if (!displayState)
@@ -61,11 +68,17 @@ int CreateWindow(bool displayState) {
 
     { 
         //square projectile
+        // As square, define positions from origin and length of side
+        float x_origin = -1.45f; float y_origin = -0.05f; float length = 0.1f;
+
+        AABB squareAABB = { glm::vec2(x_origin,y_origin), glm::vec2(x_origin + length,y_origin + length) }; //define AABB for square
+
+        //define initial square vertex positions
         float positions[] = {
-                -0.55f, -0.05f, //index 0 (x,y)
-                -0.48f, -0.05f, //index 1
-                -0.48f,  0.05f, //index 2
-                -0.55f,  0.05f  //index 3
+                x_origin,           y_origin,           //index 0 - bottom left (origin: x,y)
+                x_origin + length,  y_origin,           //index 1 - bottom right 
+                x_origin + length,  y_origin + length,  //index 2 - top right
+                x_origin,           y_origin + length   //index 3 - top left
         };
         unsigned int indices[] = {
             0, 1, 2,
@@ -73,11 +86,21 @@ int CreateWindow(bool displayState) {
         };
 
         //platform pos - same top height as bottom of projectile, bottom height -1.0f
+
+        AABB pl_AABB = { glm::vec2(x_origin,y_origin), glm::vec2(x_origin + length, y_origin + length) }; //define AABB for square
+        //float pl_positions[] = {
+        //        -2.00f,  -2.00f, //index 0
+        //        -0.40f,  -2.00f, //index 1
+        //        -0.40f,  -0.05f, //index 2
+        //        -2.00f,  -0.05f  //index 3
+        //};
+
+        float bottom_screen = -1.5f, left_screen = -2.0f, right_screen = 2.0f, width = 0.8f, height = 1.45;
         float pl_positions[] = {
-                -2.00f,  -2.00f, //index 0
-                -0.40f,  -2.00f, //index 1
-                -0.40f,  -0.05f, //index 2
-                -2.00f,  -0.05f  //index 3
+                 left_screen, bottom_screen,                     //index 0 - bottom left (origin: x,y)
+                 left_screen + width, bottom_screen,             //index 1 - bottom right 
+                 left_screen + width, bottom_screen + height,    //index 2 - top right
+                 left_screen, bottom_screen + height             //index 3 - top left
         };
 
         //floor pos
@@ -92,12 +115,8 @@ int CreateWindow(bool displayState) {
             2, 3, 0
         };
 
-        //create vertex array (vao)
-        unsigned int vao;
-        GLCall(glGenVertexArrays(1, &vao));
-        GLCall(glBindVertexArray(vao));
 
-        glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f); //projection matrix
+        glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, 0.0f, 1.0f); //projection matrix
         
         ///// projectile
         // 
