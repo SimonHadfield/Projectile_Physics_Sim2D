@@ -2,6 +2,7 @@
 
 //physics functions
 #include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 //gravity state
 float gravity(bool grav_on) //vertical velocity
@@ -25,4 +26,13 @@ glm::vec2 updatePos(glm::vec2 velocity, float del_Time, bool grav_on)
 
 bool AABBIntersect(const AABB& a, const AABB& b) {
 	return (a.min.x <= b.max.x && a.max.x >= b.min.x) && (a.min.x <= b.max.x && a.max.x >= b.min.x);
+}
+
+glm::mat4 CalculateCollisionResolutionMatrix(const AABB& a, const AABB& b)
+{
+	glm::vec2 collisionNormal = glm::normalize(a.min - a.max);
+	glm::vec2 mtv = (a.max - a.min) * collisionNormal; //
+	glm::vec2 separationVector = mtv * 0.5f; // half mtv for each object
+	glm::mat4 resolutionMatrix = glm::translate(glm::mat4(0.0f), glm::vec3(separationVector, 0.0f));
+	return resolutionMatrix;
 }

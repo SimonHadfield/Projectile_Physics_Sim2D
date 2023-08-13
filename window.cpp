@@ -64,7 +64,8 @@ int CreateWindow(bool displayState) {
     { 
         //square projectile
         // As square, define positions from origin and length of side
-        float x_origin = -1.45f; float y_origin = -0.05f; float length = 0.1f;
+        float x_origin = -1.45f; float y_origin = 0.0f; float length = 0.1f;
+        glm::mat4 collisionresolutionMatrix = glm::mat4(1.0f);
 
         AABB squareAABB = { glm::vec2(x_origin,y_origin), glm::vec2(x_origin + length,y_origin + length) }; //define AABB for square
 
@@ -81,9 +82,9 @@ int CreateWindow(bool displayState) {
         };
 
         //platform pos - same top height as bottom of projectile, bottom height -1.0f
-        float bottom_screen = -1.5f, left_screen = -2.0f, right_screen = 2.0f, width = 0.8f, height = 1.45; //define platform relative to screensize and height/width
+        const float bottom_screen = -1.5f, left_screen = -2.0f, right_screen = 2.0f, width = 0.8f, height = 1.45f; //define platform relative to screensize and height/width
         AABB pl_AABB = { glm::vec2(left_screen, bottom_screen), glm::vec2(left_screen + width, bottom_screen + height) }; //define AABB for platform
-        std::cout << "Is there a collision: " << AABBIntersect(squareAABB, pl_AABB) << std::endl;
+        std::cout << "collision square - platform: " << AABBIntersect(squareAABB, pl_AABB) << std::endl;
 
         float pl_positions[] = {
                  left_screen, bottom_screen,                     //index 0 - bottom left (origin: x,y)
@@ -93,7 +94,7 @@ int CreateWindow(bool displayState) {
         };
 
         //floor 
-        float fl_height = 1.3f;
+        float fl_height = 0.5f;
         AABB fl_AABB = { glm::vec2(left_screen, bottom_screen), glm::vec2(right_screen, bottom_screen + fl_height) }; //define AABB for platform
         float fl_positions[] = {
                 left_screen,    bottom_screen,                   //index 0 - bottom left (origin: x,y)
@@ -106,8 +107,8 @@ int CreateWindow(bool displayState) {
             2, 3, 0
         };
 
-
-        glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, 0.0f, 1.0f); //projection matrix
+        const float top_screen = 1.5f;
+        glm::mat4 proj = glm::ortho(left_screen, right_screen, bottom_screen, top_screen, 0.0f, 1.0f); //projection matrix
         
         ///// projectile
         // 
@@ -137,7 +138,7 @@ int CreateWindow(bool displayState) {
 
         ///// platform
         // 
-        //create buffer - projectile
+        //create buffer - platform
         VertexArray pl_va; // square vertex array
         VertexBuffer pl_vb(pl_positions, 4 * 2 * sizeof(float)); //vertex buffer
 
@@ -145,7 +146,7 @@ int CreateWindow(bool displayState) {
         pl_layout.Push<float>(2);
         pl_va.AddBuffer(pl_vb, pl_layout);
 
-        // create index buffer - projectile
+        // create index buffer - platform
         IndexBuffer pl_ib(indices, 6);
 
         Shader pl_shader("res/shaders/Basic.shader");
@@ -161,11 +162,6 @@ int CreateWindow(bool displayState) {
         pl_shader.Unbind();
 
         ///// floor
-        
-        //create vertex array (vao)
-        unsigned int fl_vao;
-        GLCall(glGenVertexArrays(1, &fl_vao));
-        GLCall(glBindVertexArray(fl_vao));
         
         //create buffer - floor
         VertexArray fl_va;
@@ -208,7 +204,7 @@ int CreateWindow(bool displayState) {
         glm::mat4 translationMatrix = glm::mat4(1.0f);
         
         //animation timesteps
-        const double fixedTimeStep = 1.0 / 64.0; //30 frames per second
+        const double fixedTimeStep = 1.0 / 128.0; //30 frames per second
         double accumulator = 0.0;
 
         /* Loop until the user closes the window */
@@ -247,8 +243,12 @@ int CreateWindow(bool displayState) {
                 counter = 0;
             }
 
-            std::cout << "Collision square - platform: " << AABBIntersect(squareAABB, pl_AABB) << std::endl;
-            std::cout << "Collision square - floor: " << AABBIntersect(squareAABB, fl_AABB) << std::endl;
+            std::cout << "Col square - platform: " << AABBIntersect(squareAABB, pl_AABB) << std::endl;
+            std::cout << "Col square - floor:    " << AABBIntersect(squareAABB, fl_AABB) << std::endl;
+            
+            if (grav_on)
+                grav_on = !(AABBIntersect(squareAABB, pl_AABB) || AABBIntersect(squareAABB, fl_AABB)); // turn gravity off if collision occurs 
+            
             // Animation:
             crntTime = glfwGetTime(); // get change in time
             frameTime = crntTime - prevTime;
@@ -260,11 +260,17 @@ int CreateWindow(bool displayState) {
                 velocity.x = del_position.x / fixedTimeStep;
                 velocity.y = del_position.y / fixedTimeStep;
                 translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(offset_position, 0.0f)); //translation matrix
-                
+                collisionresolutionMatrix = CalculateCollisionResolutionMatrix(squareAABB, fl_AABB);
+
+
                 //update AABBs
                 squareAABB.min = glm::vec2(translationMatrix * glm::vec4(squareAABB.min, 0.0f, 1.0f));
                 squareAABB.max = glm::vec2(translationMatrix * glm::vec4(squareAABB.max, 0.0f, 1.0f));
 
+
+                //std::cout << "x: " << (squareAABB.min).x << std::endl;
+                //std::cout << "y: " << (squareAABB.min).y << std::endl;
+                
                 accumulator -= fixedTimeStep;
             }
 
@@ -279,6 +285,7 @@ int CreateWindow(bool displayState) {
             shader.Bind();
             shader.SetUniform4f("u_Color", r, 0.0f, 1.0f, 1.0f);
             shader.SetUniformMat4f("transformationMatrix", translationMatrix);
+            shader.SetUniformMat4f("collisionresolutionMatrix", collisionresolutionMatrix);
             va.Bind();
             ib.Bind();
 
