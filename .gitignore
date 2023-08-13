@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 ﻿################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
@@ -16,3 +17,10 @@
 /.vs/Physics_Simulation/v17/Browse.VC.db
 /Physics_Simulation.vcxproj
 /Physics_Simulation.vcxproj.filters
+=======
+.vs/
+Physics_Simulation/.vs
+>>>>>>> update movement method
+/.vs/Physics_Simulation/v17/.suo
+/.vs/Physics_Simulation/v17/Browse.VC.db
+/.vs/Physics_Simulation/v17/fileList.bin
