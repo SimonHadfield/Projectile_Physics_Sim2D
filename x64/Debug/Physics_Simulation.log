@@ -1,13 +1,2 @@
-﻿  window.cpp
-C:\dev\Physics_sim\Physics_Simulation\window.cpp(276,45): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-C:\dev\Physics_sim\Physics_Simulation\window.cpp(277,45): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-C:\dev\Physics_sim\Physics_Simulation\window.cpp(366): warning C4715: 'CreateWindow': not all control paths return a value
+﻿  physics.cpp
   Physics_Simulation.vcxproj -> C:\dev\Physics_sim\Physics_Simulation\x64\Debug\Physics_Simulation.exe

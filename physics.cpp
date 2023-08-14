@@ -25,7 +25,9 @@ glm::vec2 updatePos(glm::vec2 velocity, float del_Time, bool grav_on)
 }
 
 bool AABBIntersect(const AABB& a, const AABB& b) {
-	return (a.min.x <= b.max.x && a.max.x >= b.min.x) && (a.min.x <= b.max.x && a.max.x >= b.min.x);
+	if (a.max.x < b.min.x || a.min.x > b.max.x) return false;
+	if (a.max.y < b.min.y || a.min.y > b.max.y) return false;
+	return true;
 }
 
 glm::mat4 CalculateCollisionResolutionMatrix(const AABB& a, const AABB& b)

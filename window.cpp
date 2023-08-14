@@ -207,6 +207,26 @@ int CreateWindow(bool displayState) {
         const double fixedTimeStep = 1.0 / 128.0; //30 frames per second
         double accumulator = 0.0;
 
+        squareAABB.min = glm::vec2(translationMatrix * glm::vec4(squareAABB.min, 0.0f, 1.0f));
+        squareAABB.max = glm::vec2(translationMatrix * glm::vec4(squareAABB.max, 0.0f, 1.0f));
+
+        std::cout << "AABB intial positions: " << std::endl;
+        std::cout << "\nSQUARE PROJECTILE: " << std::endl;
+        std::cout << "square: min x ->" << squareAABB.min.x << std::endl;
+        std::cout << "square: min y ->" << squareAABB.min.y << std::endl;
+        std::cout << "square: max x ->" << squareAABB.max.x << std::endl;
+        std::cout << "square: max y ->" << squareAABB.max.y << std::endl;
+        std::cout << "\nPLATFORM: " << std::endl;
+        std::cout << "square: min x ->" << pl_AABB.min.x << std::endl;
+        std::cout << "square: min y ->" << pl_AABB.min.y << std::endl;
+        std::cout << "square: max x ->" << pl_AABB.max.x << std::endl;
+        std::cout << "square: max y ->" << pl_AABB.max.y << std::endl;
+        std::cout << "\nFLOOR: " << std::endl;
+        std::cout << "floor: min x ->" << fl_AABB.min.x << std::endl;
+        std::cout << "floor: min y ->" << fl_AABB.min.y << std::endl;
+        std::cout << "floor: max x ->" << fl_AABB.max.x << std::endl;
+        std::cout << "floor: max y ->" << fl_AABB.max.y << std::endl;
+
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
@@ -283,7 +303,7 @@ int CreateWindow(bool displayState) {
                 squareAABB.min = glm::vec2(translationMatrix * glm::vec4(squareAABB.min, 0.0f, 1.0f));
                 squareAABB.max = glm::vec2(translationMatrix * glm::vec4(squareAABB.max, 0.0f, 1.0f));
 
-
+       
                 //std::cout << "x: " << (squareAABB.min).x << std::endl;
                 //std::cout << "y: " << (squareAABB.min).y << std::endl;
                 
