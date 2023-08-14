@@ -25,15 +25,15 @@ glm::vec2 updatePos(glm::vec2 velocity, float del_Time, bool grav_on)
 }
 
 bool AABBIntersect(const AABB& a, const AABB& b) {
-	if (a.max.x < b.min.x && a.min.x > b.max.x) {
+	if (a.max.x < b.min.x || a.min.x > b.max.x) {
 		a.max.x < b.min.x ? std::cout << "a.min.x < b.min.x" : std::cout << "";
 		a.min.y > b.max.y ? std::cout << "a.min.y > b.max.y" : std::cout << "";
-		return false;
+		return false; // if not overlapping in x axis there is not a collision
 	}
-	if (a.max.y < b.min.y && a.min.y > b.max.y) {
+	if (a.max.y < b.min.y || a.min.y > b.max.y) {
 		a.max.y < b.min.y ? std::cout << "a.max.y < b.min.y": std::cout << "";
 		a.min.y > b.max.y ? std::cout << "a.min.y > b.max.y" : std::cout << "";
-		return false;
+		return false; // if not overlapping in y axis there is not a collision
 	}
 	return true;
 }
