@@ -224,6 +224,22 @@ int CreateWindow(bool displayState) {
                 velocity.x = 0.0f; velocity.y = 0.0f; grav_on = false;
             }
 
+            
+            if (glfwGetKey(window, GLFW_KEY_M))
+            {
+                velocity = glm::vec2(0.0f);
+
+                if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+                    velocity.x = -0.005f;
+                if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+                    velocity.x = 0.005f;
+                if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+                    velocity.y = -0.005f;
+                if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+                    velocity.y = 0.005f;
+            }
+
+
             /* Render here */
             GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
