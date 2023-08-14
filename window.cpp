@@ -7,6 +7,11 @@
 
 #include "Shader.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
+
+
 int CreateWindow(bool displayState) {
     std::cout << displayState << std::endl;
     if (!displayState)
@@ -41,29 +46,35 @@ int CreateWindow(bool displayState) {
     std::cout << glGetString(GL_VERSION) << std::endl;
     
     //velocity of object
-    float v_velocity = 0.00f;
-    float h_velocity = 0.00f;
-
+    glm::vec2 velocity(0.0f, 0.0f);
+    glm::vec2 offset_position(0.0f, 0.0f);
     bool object_stationary = true;
 
     if (object_stationary)
     {
-        v_velocity = 0.00f;
-        h_velocity = 0.00f;
+        velocity.x = 0.0f;
+        velocity.y = 0.0f;
     }
     else if (!object_stationary)
     {
-        v_velocity = 0.01f;
-        h_velocity = 0.01f;
+        velocity.x = 0.01f;
+        velocity.y = 0.01f;
     }
 
     { 
         //square projectile
+        // As square, define positions from origin and length of side
+        float x_origin = -1.45f; float y_origin = 0.0f; float length = 0.1f;
+        glm::mat4 collisionresolutionMatrix = glm::mat4(1.0f);
+
+        AABB squareAABB = { glm::vec2(x_origin,y_origin), glm::vec2(x_origin + length,y_origin + length) }; //define AABB for square
+
+        //define initial square vertex positions
         float positions[] = {
-                -0.55f, -0.05f, //index 0 (x,y)
-                -0.48f, -0.05f, //index 1
-                -0.48f,  0.05f, //index 2
-                -0.55f,  0.05f  //index 3
+                x_origin,           y_origin,                    //index 0 - bottom left (origin: x,y)
+                x_origin + length,  y_origin,                    //index 1 - bottom right 
+                x_origin + length,  y_origin + length,           //index 2 - top right
+                x_origin,           y_origin + length            //index 3 - top left
         };
         unsigned int indices[] = {
             0, 1, 2,
@@ -71,30 +82,34 @@ int CreateWindow(bool displayState) {
         };
 
         //platform pos - same top height as bottom of projectile, bottom height -1.0f
+        const float bottom_screen = -1.5f, left_screen = -2.0f, right_screen = 2.0f, width = 0.8f, height = 1.45f; //define platform relative to screensize and height/width
+        AABB pl_AABB = { glm::vec2(left_screen, bottom_screen), glm::vec2(left_screen + width, bottom_screen + height) }; //define AABB for platform
+        std::cout << "collision square - platform: " << AABBIntersect(squareAABB, pl_AABB) << std::endl;
+
         float pl_positions[] = {
-                -1.00f,  -1.00f, //index 0
-                -0.40f,  -1.00f, //index 1
-                -0.40f,  -0.05f, //index 2
-                -1.00f,  -0.05f  //index 3
+                 left_screen, bottom_screen,                     //index 0 - bottom left (origin: x,y)
+                 left_screen + width, bottom_screen,             //index 1 - bottom right 
+                 left_screen + width, bottom_screen + height,    //index 2 - top right
+                 left_screen, bottom_screen + height             //index 3 - top left
         };
 
-        //floor pos
+        //floor 
+        float fl_height = 0.5f;
+        AABB fl_AABB = { glm::vec2(left_screen, bottom_screen), glm::vec2(right_screen, bottom_screen + fl_height) }; //define AABB for platform
         float fl_positions[] = {
-                -1.00f,  -1.00f, //index 0
-                 1.40f,  -1.00f, //index 1
-                 1.40f,  -0.70f, //index 2
-                -1.00f,  -0.70f  //index 3
+                left_screen,    bottom_screen,                   //index 0 - bottom left (origin: x,y)
+                right_screen,   bottom_screen,                   //index 1 - bottom right 
+                right_screen,   bottom_screen + fl_height,       //index 2 - top right
+                left_screen,    bottom_screen + fl_height        //index 3 - top left
         };
         unsigned int fl_indices[] = {
             0, 1, 2,
             2, 3, 0
         };
 
-        //create vertex array (vao)
-        unsigned int vao;
-        GLCall(glGenVertexArrays(1, &vao));
-        GLCall(glBindVertexArray(vao));
-
+        const float top_screen = 1.5f;
+        glm::mat4 proj = glm::ortho(left_screen, right_screen, bottom_screen, top_screen, 0.0f, 1.0f); //projection matrix
+        
         ///// projectile
         // 
         //create buffer - projectile
@@ -108,10 +123,12 @@ int CreateWindow(bool displayState) {
         // create index buffer - projectile
         IndexBuffer ib(indices, 6);
 
+
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
         //color uniform
         shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f); //rgba
+        shader.SetUniformMat4f("u_MVP", proj);
 
         //unbind everything
         va.Unbind();
@@ -121,7 +138,7 @@ int CreateWindow(bool displayState) {
 
         ///// platform
         // 
-        //create buffer - projectile
+        //create buffer - platform
         VertexArray pl_va; // square vertex array
         VertexBuffer pl_vb(pl_positions, 4 * 2 * sizeof(float)); //vertex buffer
 
@@ -129,13 +146,14 @@ int CreateWindow(bool displayState) {
         pl_layout.Push<float>(2);
         pl_va.AddBuffer(pl_vb, pl_layout);
 
-        // create index buffer - projectile
+        // create index buffer - platform
         IndexBuffer pl_ib(indices, 6);
 
         Shader pl_shader("res/shaders/Basic.shader");
         pl_shader.Bind();
         //color uniform
         pl_shader.SetUniform4f("u_Color", 0.9f, 0.3f, 0.8f, 1.0f);
+        pl_shader.SetUniformMat4f("u_MVP", proj);
 
         //unbind everything
         pl_va.Unbind();
@@ -144,11 +162,6 @@ int CreateWindow(bool displayState) {
         pl_shader.Unbind();
 
         ///// floor
-        
-        //create vertex array (vao)
-        unsigned int fl_vao;
-        GLCall(glGenVertexArrays(1, &fl_vao));
-        GLCall(glBindVertexArray(fl_vao));
         
         //create buffer - floor
         VertexArray fl_va;
@@ -165,6 +178,7 @@ int CreateWindow(bool displayState) {
         fl_shader.Bind();
         //color uniform
         fl_shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
+        fl_shader.SetUniformMat4f("u_MVP", proj);
 
         //unbind everything
         fl_va.Unbind();
@@ -178,15 +192,48 @@ int CreateWindow(bool displayState) {
         float increment = 0.005f;
         bool grav_on = false;
 
-        //time - fps counter
-        double prevTime = 0.0;
+
+        //time - fps counter, fixedTimeStep
+        double fps_prevTime = glfwGetTime();
+        double fps_crntTime = 0.0;
+        double fps_frameTime;
+        double prevTime = glfwGetTime();
         double crntTime = 0.0;
-        double del_time;
+        double frameTime;
         unsigned int counter = 0;
+        glm::mat4 translationMatrix = glm::mat4(1.0f);
+        
+        //animation timesteps
+        const double fixedTimeStep = 1.0 / 128.0; //30 frames per second
+        double accumulator = 0.0;
+
+
+        //squareAABB.min = glm::vec2(translationMatrix * glm::vec4(squareAABB.min, 0.0f, 1.0f));
+        //squareAABB.max = glm::vec2(translationMatrix * glm::vec4(squareAABB.max, 0.0f, 1.0f));
+
+        std::cout << "\n___ AABB intial positions: ___" << std::endl;
+        std::cout << "\nSQUARE PROJECTILE: " << std::endl;
+        std::cout << "square: min x ->" << squareAABB.min.x << std::endl;
+        std::cout << "square: min y ->" << squareAABB.min.y << std::endl;
+        std::cout << "square: max x ->" << squareAABB.max.x << std::endl;
+        std::cout << "square: max y ->" << squareAABB.max.y << std::endl;
+        std::cout << "\nPLATFORM: " << std::endl;
+        std::cout << "square: min x ->" << pl_AABB.min.x << std::endl;
+        std::cout << "square: min y ->" << pl_AABB.min.y << std::endl;
+        std::cout << "square: max x ->" << pl_AABB.max.x << std::endl;
+        std::cout << "square: max y ->" << pl_AABB.max.y << std::endl;
+        std::cout << "\nFLOOR: " << std::endl;
+        std::cout << "floor: min x ->" << fl_AABB.min.x << std::endl;
+        std::cout << "floor: min y ->" << fl_AABB.min.y << std::endl;
+        std::cout << "floor: max x ->" << fl_AABB.max.x << std::endl;
+        std::cout << "floor: max y ->" << fl_AABB.max.y << std::endl;
+
+        AABBIntersect(squareAABB, fl_AABB);
 
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
+            //break;
             // userinput
             if ((glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) && !grav_on)
                 grav_on = true;
@@ -194,45 +241,77 @@ int CreateWindow(bool displayState) {
             //    grav_on = false;
             if ((glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS))
             {
-                v_velocity = 0.015f; h_velocity = 0.008f; grav_on = true;
+                velocity.x = 0.015f; velocity.y = 0.008f; grav_on = true;
             }
             if ((glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS))
             {
-                v_velocity = 0.00f; h_velocity = 0.00f; grav_on = false;
-                
+                velocity.x = 0.0f; velocity.y = 0.0f; grav_on = false;
             }
+
+            
+            if (glfwGetKey(window, GLFW_KEY_M))
+            {
+                velocity = glm::vec2(0.0f);
+
+                if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+                    velocity.x = -0.005f;
+                if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+                    velocity.x = 0.005f;
+                if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+                    velocity.y = -0.005f;
+                if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+                    velocity.y = 0.005f;
+            }
+
 
             /* Render here */
             GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
 
-
+            
             //calculate fps
-            crntTime = glfwGetTime(); // get change in time
-            del_time = crntTime - prevTime;
-         
+            fps_crntTime = glfwGetTime(); // get change in time
+            fps_frameTime = fps_crntTime - fps_prevTime;
             counter++;
-            if (del_time >= 1.0 / 5.0)
+            if (fps_frameTime >= 1.0 / 5.0)
             {
-                std::string FPS = std::to_string((1.0 / del_time) * counter);
-                std::string ms = std::to_string((del_time / counter) * 1000);
+                std::string FPS = std::to_string((1.0 / fps_frameTime) * counter);
+                std::string ms = std::to_string((fps_frameTime / counter) * 1000);
                 std::string newTitle = FPS + "FPS / " + ms + "ms";
                 glfwSetWindowTitle(window, newTitle.c_str());
-                prevTime = crntTime;
+                fps_prevTime = fps_crntTime;
                 counter = 0;
             }
 
-            del_time = 0.2;
+            std::cout << "Col square - platform: " << AABBIntersect(squareAABB, pl_AABB) << std::endl;
+            std::cout << "Col square - floor:    " << AABBIntersect(squareAABB, fl_AABB) << std::endl;
+            
+            if (grav_on)
+                grav_on = !(AABBIntersect(squareAABB, pl_AABB) || AABBIntersect(squareAABB, fl_AABB)); // turn gravity off if collision occurs 
+            
             // Animation:
-            std::vector<float> del_position = updatePos(v_velocity, h_velocity, del_time, grav_on);
-            v_velocity = del_position[2];
-
-            for (int i = 0; i < (sizeof(positions) / sizeof(float)); i++)
+            crntTime = glfwGetTime(); // get change in time
+            frameTime = crntTime - prevTime;
+            accumulator += frameTime;
+            while (accumulator >= fixedTimeStep)
             {
-                if (!(i % 2))
-                    positions[i] += del_position[0]; //move x coordinate
-                else if (i % 2)
-                    positions[i] += del_position[1]; //move y coordinate
+                glm::vec2 del_position = updatePos(velocity, fixedTimeStep, grav_on);
+                offset_position.x += del_position.x; offset_position.y += del_position.y; // add change in position to current offset from origin 
+                velocity.x = del_position.x / fixedTimeStep;
+                velocity.y = del_position.y / fixedTimeStep;
+                translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(offset_position, 0.0f)); //translation matrix
+                collisionresolutionMatrix = CalculateCollisionResolutionMatrix(squareAABB, fl_AABB);
+
+
+                //update AABBs
+                squareAABB.min = glm::vec2(translationMatrix * glm::vec4(squareAABB.min, 0.0f, 1.0f));
+                squareAABB.max = glm::vec2(translationMatrix * glm::vec4(squareAABB.max, 0.0f, 1.0f));
+
+       
+                //std::cout << "x: " << (squareAABB.min).x << std::endl;
+                //std::cout << "y: " << (squareAABB.min).y << std::endl;
+                
+                accumulator -= fixedTimeStep;
             }
 
             //create buffer - square
@@ -245,6 +324,8 @@ int CreateWindow(bool displayState) {
             //bind
             shader.Bind();
             shader.SetUniform4f("u_Color", r, 0.0f, 1.0f, 1.0f);
+            shader.SetUniformMat4f("transformationMatrix", translationMatrix);
+            shader.SetUniformMat4f("collisionresolutionMatrix", collisionresolutionMatrix);
             va.Bind();
             ib.Bind();
 
@@ -260,6 +341,7 @@ int CreateWindow(bool displayState) {
             //bind shader
             pl_shader.Bind();
             pl_shader.SetUniform4f("u_Color", 0.3f, 0.1f, 0.3f, 1.0f);
+            pl_shader.SetUniformMat4f("transformationMatrix", glm::mat4(1.0f)); // don't transform platform
             pl_va.Bind();
             pl_ib.Bind();
 
@@ -275,6 +357,7 @@ int CreateWindow(bool displayState) {
             //bind shader
             fl_shader.Bind();
             fl_shader.SetUniform4f("u_Color", 0.3f, 0.1f, 0.3f, 1.0f);
+            fl_shader.SetUniformMat4f("transformationMatrix", glm::mat4(1.0f)); // don't transform floor
             fl_va.Bind();
             fl_ib.Bind();
 
@@ -287,9 +370,9 @@ int CreateWindow(bool displayState) {
             fl_shader.Unbind();
 
             if (r > 1.0f)
-                increment = -0.005f;
+                increment = -0.0005f;
             else if (r < 0.0f)
-                increment = 0.005f;
+                increment = 0.0005f;
 
             r += increment;
 

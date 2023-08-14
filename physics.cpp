@@ -1,7 +1,8 @@
 #include "physics.h"
 
 //physics functions
-
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 //gravity state
 float gravity(bool grav_on) //vertical velocity
@@ -11,15 +12,37 @@ float gravity(bool grav_on) //vertical velocity
 }
 
 //change in position
-std::vector<float> updatePos(float v_velocity, float h_velocity, float del_time, bool grav_on)
+glm::vec2 updatePos(glm::vec2 velocity, float del_Time, bool grav_on)
 {
 	//2D vector x and y
-	// del_x += v_v*del_time, del_y = h_v+del_time
+	// del_x += v_v*del_Time, del_y = h_v+del_Time
 	float g = gravity(grav_on);
-	float del_v = g * del_time;
-	std::vector<float> del_position = {h_velocity * del_time, (v_velocity + del_v) * del_time , v_velocity + del_v };
+	float del_v = g * del_Time;
+	velocity.y += del_v;
+	glm::vec2 del_position(velocity.x * del_Time, velocity.y * del_Time);
 	
 	return del_position;
 }
-// a*del_time = del_v
-// del_x = v * del_time + additional vel
+
+bool AABBIntersect(const AABB& a, const AABB& b) {
+	if (a.max.x < b.min.x || a.min.x > b.max.x) {
+		a.max.x < b.min.x ? std::cout << "a.min.x < b.min.x" : std::cout << "";
+		a.min.y > b.max.y ? std::cout << "a.min.y > b.max.y" : std::cout << "";
+		return false; // if not overlapping in x axis there is not a collision
+	}
+	if (a.max.y < b.min.y || a.min.y > b.max.y) {
+		a.max.y < b.min.y ? std::cout << "a.max.y < b.min.y": std::cout << "";
+		a.min.y > b.max.y ? std::cout << "a.min.y > b.max.y" : std::cout << "";
+		return false; // if not overlapping in y axis there is not a collision
+	}
+	return true;
+}
+
+glm::mat4 CalculateCollisionResolutionMatrix(const AABB& a, const AABB& b)
+{
+	glm::vec2 collisionNormal = glm::normalize(a.min - a.max);
+	glm::vec2 mtv = (a.max - a.min) * collisionNormal; //
+	glm::vec2 separationVector = mtv * 0.5f; // half mtv for each object
+	glm::mat4 resolutionMatrix = glm::translate(glm::mat4(0.0f), glm::vec3(separationVector, 0.0f));
+	return resolutionMatrix;
+}

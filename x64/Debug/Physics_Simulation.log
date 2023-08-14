@@ -1,4 +1,2 @@
-﻿  window.cpp
-A:\dev\Projectile_Physics_Sim2D\window.cpp(195,81): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-A:\dev\Projectile_Physics_Sim2D\window.cpp(240): warning C4715: 'CreateWindow': not all control paths return a value
-  Physics_Simulation.vcxproj -> A:\dev\Projectile_Physics_Sim2D\x64\Debug\Physics_Simulation.exe
+﻿  physics.cpp
+  Physics_Simulation.vcxproj -> C:\dev\Physics_sim\Physics_Simulation\x64\Debug\Physics_Simulation.exe

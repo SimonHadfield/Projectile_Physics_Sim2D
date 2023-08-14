@@ -1,13 +1,27 @@
+﻿<<<<<<< HEAD
+<<<<<<< HEAD
 ﻿################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/.vs/Physics_Simulation/v17/ipch/AutoPCH/a759ea05b43c221e/OBJECT.ipch
-/.vs/Physics_Simulation/FileContentIndex/1bf3a81a-d592-45db-aeca-1532ed88f54a.vsidx
-/.vs/Physics_Simulation/FileContentIndex/3f645e43-d2be-47ee-999b-7267f2e65665.vsidx
-/.vs/Physics_Simulation/FileContentIndex/a2673a25-9895-4c3c-ac00-7078d352244a.vsidx
+/.vs/Physics_Simulation/FileContentIndex/6493ee42-d34c-4842-b9dd-af3f90d46274.vsidx
+/.vs/Physics_Simulation/v17/ipch/AutoPCH/2d10f9bd433c13f2/WINDOW.ipch
+/.vs/Physics_Simulation/v17/ipch/AutoPCH/9db864a7db85efb7/SHADER.ipch
+/.vs/Physics_Simulation/v17/ipch/AutoPCH/a0e74351e2c4a96/INDEXBUFFER.ipch
+/.vs/Physics_Simulation/v17/ipch/AutoPCH/145021bf1eb7b1a5/RENDERER.ipch
 /.vs/Physics_Simulation/v17/Browse.VC.db
-/.vs/Physics_Simulation/v17/Browse.VC.db-shm
-/.vs/Physics_Simulation/v17/Browse.VC.db-wal
-/.vs/Physics_Simulation/v17/Browse.VC.opendb
-/.vs/Physics_Simulation/FileContentIndex
+=======
+.vs/
+>>>>>>> add gitignore
+/.vs/Physics_Simulation/v17/ipch/AutoPCH/2d10f9bd433c13f2/WINDOW.ipch
+/.vs/Physics_Simulation/v17/Browse.VC.db
+/Physics_Simulation.vcxproj
+/Physics_Simulation.vcxproj.filters
+=======
+.vs/
+Physics_Simulation/.vs
+>>>>>>> update movement method
+/.vs/Physics_Simulation/v17/.suo
+/.vs/Physics_Simulation/v17/Browse.VC.db
+/.vs/Physics_Simulation/v17/fileList.bin
+/.vs/Physics_Simulation/v17/Browse.VC.db
