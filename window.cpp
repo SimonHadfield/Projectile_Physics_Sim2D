@@ -207,10 +207,11 @@ int CreateWindow(bool displayState) {
         const double fixedTimeStep = 1.0 / 128.0; //30 frames per second
         double accumulator = 0.0;
 
-        squareAABB.min = glm::vec2(translationMatrix * glm::vec4(squareAABB.min, 0.0f, 1.0f));
-        squareAABB.max = glm::vec2(translationMatrix * glm::vec4(squareAABB.max, 0.0f, 1.0f));
 
-        std::cout << "AABB intial positions: " << std::endl;
+        //squareAABB.min = glm::vec2(translationMatrix * glm::vec4(squareAABB.min, 0.0f, 1.0f));
+        //squareAABB.max = glm::vec2(translationMatrix * glm::vec4(squareAABB.max, 0.0f, 1.0f));
+
+        std::cout << "\n___ AABB intial positions: ___" << std::endl;
         std::cout << "\nSQUARE PROJECTILE: " << std::endl;
         std::cout << "square: min x ->" << squareAABB.min.x << std::endl;
         std::cout << "square: min y ->" << squareAABB.min.y << std::endl;
@@ -227,9 +228,12 @@ int CreateWindow(bool displayState) {
         std::cout << "floor: max x ->" << fl_AABB.max.x << std::endl;
         std::cout << "floor: max y ->" << fl_AABB.max.y << std::endl;
 
+        AABBIntersect(squareAABB, fl_AABB);
+
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
+            //break;
             // userinput
             if ((glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) && !grav_on)
                 grav_on = true;
