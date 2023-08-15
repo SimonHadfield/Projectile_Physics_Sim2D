@@ -64,10 +64,13 @@ int CreateWindow(bool displayState) {
     { 
         //square projectile
         // As square, define positions from origin and length of side
-        float x_origin = -1.45f; float y_origin = -0.00f; float length = 0.1f;
+        float x_origin = -1.45f; float y_origin = 0.001f; float length = 0.1f;
         glm::mat4 collisionresolutionMatrix = glm::mat4(1.0f);
 
-        AABB squareAABB = { glm::vec2(x_origin,y_origin), glm::vec2(x_origin + length,y_origin + length) }; //define AABB for square
+        AABB init_squareAABB = {
+        glm::vec2(x_origin, y_origin),
+        glm::vec2(x_origin + length, y_origin + length)}; //define AABB for square
+        AABB squareAABB = init_squareAABB;
 
         //define initial square vertex positions
         float positions[] = {
@@ -208,36 +211,35 @@ int CreateWindow(bool displayState) {
         const double fixedTimeStep = 1.0 / 10.0; //30 ticks per second
         double accumulator = 0.0;
 
-        std::cout << "\n___ AABB intial positions: ___" << std::endl;
-        std::cout << "\nSQUARE PROJECTILE: " << std::endl;
-        std::cout << "square: min x ->" << squareAABB.min.x << std::endl;
-        std::cout << "square: min y ->" << squareAABB.min.y << std::endl;
-        std::cout << "square: max x ->" << squareAABB.max.x << std::endl;
-        std::cout << "square: max y ->" << squareAABB.max.y << std::endl;
-        std::cout << "\nPLATFORM: " << std::endl;
-        std::cout << "square: min x ->" << pl_AABB.min.x << std::endl;
-        std::cout << "square: min y ->" << pl_AABB.min.y << std::endl;
-        std::cout << "square: max x ->" << pl_AABB.max.x << std::endl;
-        std::cout << "square: max y ->" << pl_AABB.max.y << std::endl;
-        std::cout << "\nFLOOR: " << std::endl;
-        std::cout << "floor: min x ->" << fl_AABB.min.x << std::endl;
-        std::cout << "floor: min y ->" << fl_AABB.min.y << std::endl;
-        std::cout << "floor: max x ->" << fl_AABB.max.x << std::endl;
-        std::cout << "floor: max y ->" << fl_AABB.max.y << std::endl;
+        //std::cout << "\n___ AABB intial positions: ___" << std::endl;
+        //std::cout << "\nSQUARE PROJECTILE: " << std::endl;
+        //std::cout << "square: min x -> " << squareAABB.min.x << std::endl;
+        //std::cout << "square: min y -> " << squareAABB.min.y << std::endl;
+        //std::cout << "square: max x -> " << squareAABB.max.x << std::endl;
+        //std::cout << "square: max y -> " << squareAABB.max.y << std::endl;
+        //std::cout << "\nPLATFORM: " << std::endl;
+        //std::cout << "square: min x -> " << pl_AABB.min.x << std::endl;
+        //std::cout << "square: min y -> " << pl_AABB.min.y << std::endl;
+        //std::cout << "square: max x -> " << pl_AABB.max.x << std::endl;
+        //std::cout << "square: max y -> " << pl_AABB.max.y << std::endl;
+        //std::cout << "\nFLOOR: " << std::endl;
+        //std::cout << "floor: min x -> " << fl_AABB.min.x << std::endl;
+        //std::cout << "floor: min y -> " << fl_AABB.min.y << std::endl;
+        //std::cout << "floor: max x -> " << fl_AABB.max.x << std::endl;
+        //std::cout << "floor: max y -> " << fl_AABB.max.y << std::endl;
 
-        if (AABBIntersect(squareAABB, fl_AABB)) std::cout << "\nCollsion with floor";
-        if (AABBIntersect(squareAABB, pl_AABB)) std::cout << "\nCollsion with platform";
-        else std::cout << "\nNo initial collsion\n";
-
+        //if (AABBIntersect(squareAABB, fl_AABB)) std::cout << "\nCollsion with floor";
+        //if (AABBIntersect(squareAABB, pl_AABB)) std::cout << "\nCollsion with platform";
+        //else std::cout << "\nNo initial collsion\n";
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
-            //break;
+          
             // userinput
             if ((glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) && !grav_on)
                 grav_on = true;
-            //else if ((glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) && grav_on)
-            //    grav_on = false;
+            else if ((glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) && grav_on) // ineffective currently
+                grav_on = false;
 
             if ((glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS))
             {
@@ -245,7 +247,7 @@ int CreateWindow(bool displayState) {
             }
             if ((glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS))
             {
-                velocity.x = 0.0f; velocity.y = 0.0f; grav_on = false;
+                velocity.x = 0.0f; velocity.y = 0.0f; grav_on = false; offset_position = { 0.0f,0.0f };
             }
 
             // debugger movement. If m held then can fly around 
@@ -283,11 +285,7 @@ int CreateWindow(bool displayState) {
                 counter = 0;
             }
 
-            
-            if (grav_on)
-                grav_on = !(AABBIntersect(squareAABB, pl_AABB) || AABBIntersect(squareAABB, fl_AABB)); // turn gravity off if collision 
-            if ((AABBIntersect(squareAABB, pl_AABB)) || (AABBIntersect(squareAABB, fl_AABB)))
-                velocity.y = {0.0f}; // stop movement if collision found
+   
 
             // Animation:
             crntTime = glfwGetTime(); // get change in time
@@ -295,6 +293,11 @@ int CreateWindow(bool displayState) {
             accumulator += frameTime;
             while (accumulator >= fixedTimeStep) 
             {
+                // check for collsion
+                if ((AABBIntersect(squareAABB, fl_AABB)) || (AABBIntersect(squareAABB, pl_AABB))) {
+                    std::cout << "Collision occured" << std::endl; velocity.y = { 0.0f }; offset_position.y += 0.001; // stop movement if collision found
+                }
+                //std::cout << velocity.y;
                 glm::vec2 del_position = updatePos(velocity, fixedTimeStep, grav_on);
                 offset_position.x += del_position.x; offset_position.y += del_position.y; // add change in position to current offset from origin 
                 velocity.x = del_position.x / fixedTimeStep;
@@ -304,43 +307,53 @@ int CreateWindow(bool displayState) {
 
 
                 //update AABBs
-                squareAABB.min = glm::vec2(translationMatrix[3]);
-                squareAABB.max = glm::vec2(translationMatrix[3]);
-
-                //squareAABB.max = {};
-                //std::cout << "square min x and y: " << squareAABB.min.x << ", " << squareAABB.min.y << std::endl;
-                //std::cout << "Time passed: " << frameTime << std::endl;
-
-                //diagnose why platform collision not working
-                bool i = (AABBIntersect(squareAABB, pl_AABB));
+                squareAABB.min = init_squareAABB.min + glm::vec2(translationMatrix[3]); // offset position is equal to initial + offset
+                squareAABB.max = init_squareAABB.max + glm::vec2(translationMatrix[3]);
 
 
-                if ((AABBIntersect(squareAABB, fl_AABB)) || (AABBIntersect(squareAABB, pl_AABB))) {
-                    std::cout << "Collision occured" << std::endl; velocity = { 0.0f,0.0f }; // stop movement if collision found
-                }
-                
-                //std::cout << " AABB x: " << (squareAABB.min).x << " offset x: " << offset_position.x << std::endl;
-                //if ((squareAABB.min.x != (offset_position.x)) && (squareAABB.min.y != (y_origin + offset_position.y)))
-                //{
-                //    std::cout << "Error: x and y positions do not match" << std::endl; break;
-                //}
-                //else if ((squareAABB.min).x != (offset_position.x))
-                //{
-                //    std::cout << "Error: x positions do not match" << std::endl; break;
-                //}
-                //else if ((squareAABB.min).y != (offset_position.y))
-                //{
-                //    std::cout << "Error: y positions do not match" << std::endl; break;
-                //}
 
                 accumulator -= fixedTimeStep;
             }
             
+            //std::cout << " AABB x: " << (squareAABB.min).x << " offset x: " << offset_position.x << std::endl;
+            if ((squareAABB.min.x != (init_squareAABB.min.x + offset_position.x)) && (squareAABB.min.y != (init_squareAABB.min.y + + offset_position.y)))
+            {
+                std::cout << "Error: x and y positions do not match" << std::endl; break;
+            }
+            else if ((squareAABB.min.x) != (init_squareAABB.min.x + offset_position.x))
+            {
+                std::cout << "Error: x positions do not match" << std::endl; 
+                std::cout << squareAABB.min.x << " != " << init_squareAABB.min.x + offset_position.x << std::endl;
+                break;
+            }
+            else if ((squareAABB.min.y) != (init_squareAABB.min.y + offset_position.y))
+            {
+                std::cout << "Error: y positions do not match" << std::endl;
+                std::cout << squareAABB.min.y << " != " << offset_position.y << std::endl;
+                break;
+            }
             //if (squareAABB.min.y < pl_AABB.max.y) {
             //    std::cout << "collision platform";
             //    break;
             //}
 
+            //diagnose why platform collision not working
+
+
+            // test platform 
+            //std::cout << "\nPlatform test: \n";
+            //std::cout << "Square AABB coordinates: min -> x = " << squareAABB.min.x << " y = " << squareAABB.min.y << " max -> x = " << squareAABB.max.x << " y = " << /squareAABB.max.y/ << std::endl;
+            //std::cout << "\nY Tests: \n";
+            //if (squareAABB.min.y > pl_AABB.max.y) std::cout << "square.min.y > pl.max.y: " << squareAABB.min.y << " > " << pl_AABB.max.y << std::endl;
+            //if (squareAABB.max.y < pl_AABB.min.y) std::cout << "square.max.y < pl.min.y: " << squareAABB.max.y << " < " << pl_AABB.min.y << std::endl;
+            //else if (!((squareAABB.min.y > pl_AABB.max.y) || (squareAABB.max.y < pl_AABB.min.y))) std::cout << "Intersection occured regarding y coordinates \n";
+            //std::cout << "\nX Tests: \n";
+            //if (squareAABB.min.x > pl_AABB.max.x) std::cout << "square.min.x > pl.max.x" << std::endl;
+            //if (squareAABB.max.x < pl_AABB.min.x) std::cout << "square.min.x < pl.min.x" << std::endl;
+            //else if (!((squareAABB.min. > pl_AABB.max.x) || (squareAABB.max.x < pl_AABB.min.x))) std::cout << "Intersection occured regarding x coordinates \n";
+            //std::cout << (AABBIntersect(squareAABB, pl_AABB));
+
+            //break;
 
             
 
@@ -375,7 +388,7 @@ int CreateWindow(bool displayState) {
             pl_va.Bind();
             pl_ib.Bind();
 
-            GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+            GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr)); // draw platform
 
             //create array and buffer - floor
             VertexArray fl_va;
@@ -391,7 +404,7 @@ int CreateWindow(bool displayState) {
             fl_va.Bind();
             fl_ib.Bind();
 
-            GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+            GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr)); // draw floor
 
             //unbind everything
             fl_va.Unbind();
@@ -413,7 +426,13 @@ int CreateWindow(bool displayState) {
             /* Poll for and process events */
             glfwPollEvents();
 
+            
             //glfwWaitEventsTimeout(0.016); //approx 60fps
+            //std::cout << "\nSQUARE PROJECTILE: " << std::endl;
+            //std::cout << "square: min x -> " << squareAABB.min.x << std::endl;
+            //std::cout << "square: min y -> " << squareAABB.min.y << std::endl;
+            //std::cout << "square: max x -> " << squareAABB.max.x << std::endl;
+            //std::cout << "square: max y -> " << squareAABB.max.y << std::endl;
         }
     }
     glfwTerminate();

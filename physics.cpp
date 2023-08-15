@@ -27,13 +27,13 @@ glm::vec2 updatePos(glm::vec2 velocity, float del_Time, bool grav_on)
 
 bool AABBIntersect(const AABB& a, const AABB& b) {
 	if (a.max.x < b.min.x || a.min.x > b.max.x) {
-		//a.max.x < b.min.x ? std::cout << "a.min.x < b.min.x  \n" : std::cout << "";
-		//a.min.y > b.max.y ? std::cout << "a.min.y > b.max.y  \n" : std::cout << "";
+		//a.max.x < b.min.x ? std::cout << "right of one is less than left of other \n a.max.x < b.min.x  \n" : std::cout << "";
+		//a.min.x > b.max.x ? std::cout << "left of one is greater than right of other \n a.min.x > b.max.x  \n" : std::cout << "";
 		return false; // if not overlapping in x axis there is not a collision
 	}
 	if (a.max.y < b.min.y || a.min.y > b.max.y) {
-		//a.max.y < b.min.y ? std::cout << "a.max.y < b.min.y  \n": std::cout << "";
-		//a.min.y > b.max.y ? std::cout << "a.min.y > b.max.y  \n" : std::cout << "";
+		//a.max.y < b.min.y ? std::cout << "top of one is less than bottom of other \n a.max.y < b.min.y  \n": std::cout << "";
+		//a.min.y > b.max.y ? std::cout << "bottom of one is greater than top of other \n a.min.y > b.max.y  \n" : std::cout << "";
 		return false; // if not overlapping in y axis there is not a collision
 	}
 	return true;
