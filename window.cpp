@@ -206,31 +206,12 @@ int CreateWindow(bool displayState) {
         double frameTime;
         unsigned int counter = 0;
         glm::mat4 translationMatrix = glm::mat4(1.0f);
+        double dt;
         
         //animation timesteps
         const double fixedTimeStep = 1.0 / 10.0; //30 ticks per second
         double accumulator = 0.0;
 
-        //std::cout << "\n___ AABB intial positions: ___" << std::endl;
-        //std::cout << "\nSQUARE PROJECTILE: " << std::endl;
-        //std::cout << "square: min x -> " << squareAABB.min.x << std::endl;
-        //std::cout << "square: min y -> " << squareAABB.min.y << std::endl;
-        //std::cout << "square: max x -> " << squareAABB.max.x << std::endl;
-        //std::cout << "square: max y -> " << squareAABB.max.y << std::endl;
-        //std::cout << "\nPLATFORM: " << std::endl;
-        //std::cout << "square: min x -> " << pl_AABB.min.x << std::endl;
-        //std::cout << "square: min y -> " << pl_AABB.min.y << std::endl;
-        //std::cout << "square: max x -> " << pl_AABB.max.x << std::endl;
-        //std::cout << "square: max y -> " << pl_AABB.max.y << std::endl;
-        //std::cout << "\nFLOOR: " << std::endl;
-        //std::cout << "floor: min x -> " << fl_AABB.min.x << std::endl;
-        //std::cout << "floor: min y -> " << fl_AABB.min.y << std::endl;
-        //std::cout << "floor: max x -> " << fl_AABB.max.x << std::endl;
-        //std::cout << "floor: max y -> " << fl_AABB.max.y << std::endl;
-
-        //if (AABBIntersect(squareAABB, fl_AABB)) std::cout << "\nCollsion with floor";
-        //if (AABBIntersect(squareAABB, pl_AABB)) std::cout << "\nCollsion with platform";
-        //else std::cout << "\nNo initial collsion\n";
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
@@ -275,7 +256,7 @@ int CreateWindow(bool displayState) {
             fps_crntTime = glfwGetTime(); // get change in time
             fps_frameTime = fps_crntTime - fps_prevTime;
             counter++;
-            if (fps_frameTime >= 1.0 / 3.0) 
+            if (fps_frameTime >= 1.0 / 10.0) 
             {
                 std::string FPS = std::to_string((1.0 / fps_frameTime) * counter);
                 std::string ms = std::to_string((fps_frameTime / counter) * 1000);
@@ -290,7 +271,27 @@ int CreateWindow(bool displayState) {
             // Animation:
             crntTime = glfwGetTime(); // get change in time
             frameTime = crntTime - prevTime;
-            accumulator += frameTime;
+            dt = crntTime - prevTime;
+            //accumulator += frameTime;
+
+
+            if ((AABBIntersect(squareAABB, fl_AABB)) || (AABBIntersect(squareAABB, pl_AABB))) {
+                std::cout << "Collision occured" << std::endl; velocity.y = { 0.0f }; offset_position.y += 0.001; // stop movement if collision found
+            }
+            //std::cout << velocity.y;
+            glm::vec2 del_position = updatePos(velocity, dt, grav_on);
+            offset_position.x += del_position.x; offset_position.y += del_position.y; // add change in position to current offset from origin 
+            velocity.x = del_position.x / dt;
+            velocity.y = del_position.y / dt;
+            translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(offset_position, 0.0f)); //translation matrix
+            collisionresolutionMatrix = CalculateCollisionResolutionMatrix(squareAABB, fl_AABB);
+            std::cout << "V.x: " << velocity.x << std::endl;
+
+            //update AABBs
+            squareAABB.min = init_squareAABB.min + glm::vec2(translationMatrix[3]); // offset position is equal to initial + offset
+            squareAABB.max = init_squareAABB.max + glm::vec2(translationMatrix[3]);
+
+            /*
             while (accumulator >= fixedTimeStep) 
             {
                 // check for collsion
@@ -314,7 +315,7 @@ int CreateWindow(bool displayState) {
 
                 accumulator -= fixedTimeStep;
             }
-            
+            */
             //std::cout << " AABB x: " << (squareAABB.min).x << " offset x: " << offset_position.x << std::endl;
             if ((squareAABB.min.x != (init_squareAABB.min.x + offset_position.x)) && (squareAABB.min.y != (init_squareAABB.min.y + + offset_position.y)))
             {
@@ -427,7 +428,7 @@ int CreateWindow(bool displayState) {
             glfwPollEvents();
 
             
-            //glfwWaitEventsTimeout(0.016); //approx 60fps
+            //glfwWaitEventsTimeout(0.0016); //approx 60fps
             //std::cout << "\nSQUARE PROJECTILE: " << std::endl;
             //std::cout << "square: min x -> " << squareAABB.min.x << std::endl;
             //std::cout << "square: min y -> " << squareAABB.min.y << std::endl;
