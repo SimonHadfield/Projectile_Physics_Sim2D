@@ -7,7 +7,7 @@
 //gravity state
 float gravity(bool grav_on) //vertical velocity
 {
-	float g = -0.000025f;
+	float g = -4.5f;
 	//float g = -0.0000025f;
 	return grav_on ? g : 0;
 }
@@ -16,7 +16,7 @@ float gravity(bool grav_on) //vertical velocity
 glm::vec2 updatePos(glm::vec2 velocity, float del_Time, bool grav_on)
 {
 	//2D vector x and y
-	// del_x += v_v*del_Time, del_y = h_v+del_Time
+	// del_x += v_x * dt , del_y = v_y + dt
 	float g = gravity(grav_on);
 	float del_v = g * del_Time;
 	velocity.y += del_v;

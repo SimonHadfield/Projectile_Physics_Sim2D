@@ -64,7 +64,7 @@ int CreateWindow(bool displayState) {
     { 
         //square projectile
         // As square, define positions from origin and length of side
-        float x_origin = -1.45f; float y_origin = 0.001f; float length = 0.1f;
+        float x_origin = -1.45f; float y_origin = -0.04f; float length = 0.1f;
         glm::mat4 collisionresolutionMatrix = glm::mat4(1.0f);
 
         AABB init_squareAABB = {
@@ -209,7 +209,8 @@ int CreateWindow(bool displayState) {
         double dt;
         
         //animation timesteps
-        const double fixedTimeStep = 1.0 / 10.0; //30 ticks per second
+        const double ticks = 200; // ticks per second
+        const double fixedTimeStep = 1.0 / ticks; 
         double accumulator = 0.0;
 
         /* Loop until the user closes the window */
@@ -224,7 +225,7 @@ int CreateWindow(bool displayState) {
 
             if ((glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS))
             {
-                velocity.x = 0.0015f; velocity.y = 0.0008f; grav_on = true;
+                velocity.x = 1.5f; velocity.y = 0.8f; grav_on = true;
             }
             if ((glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS))
             {
@@ -272,9 +273,10 @@ int CreateWindow(bool displayState) {
             crntTime = glfwGetTime(); // get change in time
             frameTime = crntTime - prevTime;
             dt = crntTime - prevTime;
-            //accumulator += frameTime;
+            accumulator += frameTime;
+            prevTime = crntTime;
 
-
+/*
             if ((AABBIntersect(squareAABB, fl_AABB)) || (AABBIntersect(squareAABB, pl_AABB))) {
                 std::cout << "Collision occured" << std::endl; velocity.y = { 0.0f }; offset_position.y += 0.001; // stop movement if collision found
             }
@@ -285,13 +287,12 @@ int CreateWindow(bool displayState) {
             velocity.y = del_position.y / dt;
             translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(offset_position, 0.0f)); //translation matrix
             collisionresolutionMatrix = CalculateCollisionResolutionMatrix(squareAABB, fl_AABB);
-            std::cout << "V.x: " << velocity.x << std::endl;
 
             //update AABBs
             squareAABB.min = init_squareAABB.min + glm::vec2(translationMatrix[3]); // offset position is equal to initial + offset
             squareAABB.max = init_squareAABB.max + glm::vec2(translationMatrix[3]);
-
-            /*
+*/
+            
             while (accumulator >= fixedTimeStep) 
             {
                 // check for collsion
@@ -315,7 +316,7 @@ int CreateWindow(bool displayState) {
 
                 accumulator -= fixedTimeStep;
             }
-            */
+            
             //std::cout << " AABB x: " << (squareAABB.min).x << " offset x: " << offset_position.x << std::endl;
             if ((squareAABB.min.x != (init_squareAABB.min.x + offset_position.x)) && (squareAABB.min.y != (init_squareAABB.min.y + + offset_position.y)))
             {

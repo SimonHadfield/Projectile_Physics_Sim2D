@@ -1,19 +1,19 @@
 ﻿  window.cpp
-A:\dev\Projectile_Physics_Sim2D\window.cpp(279,113): warning C4305: '+=': truncation from 'double' to 'T'
+A:\dev\Projectile_Physics_Sim2D\window.cpp(300,117): warning C4305: '+=': truncation from 'double' to 'T'
           with
           [
               T=float
           ]
-A:\dev\Projectile_Physics_Sim2D\window.cpp(282,58): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-A:\dev\Projectile_Physics_Sim2D\window.cpp(284,41): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+A:\dev\Projectile_Physics_Sim2D\window.cpp(303,62): warning C4305: 'argument': truncation from 'const double' to 'float'
+A:\dev\Projectile_Physics_Sim2D\window.cpp(305,45): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
           with
           [
               T=float
           ]
-A:\dev\Projectile_Physics_Sim2D\window.cpp(285,41): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+A:\dev\Projectile_Physics_Sim2D\window.cpp(306,45): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
           with
           [
               T=float
           ]
-A:\dev\Projectile_Physics_Sim2D\window.cpp(441): warning C4715: 'CreateWindow': not all control paths return a value
+A:\dev\Projectile_Physics_Sim2D\window.cpp(442): warning C4715: 'CreateWindow': not all control paths return a value
   Physics_Simulation.vcxproj -> A:\dev\Projectile_Physics_Sim2D\x64\Debug\Physics_Simulation.exe
