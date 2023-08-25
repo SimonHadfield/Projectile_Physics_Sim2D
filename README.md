@@ -1,6 +1,7 @@
 # Physics_Sim2D
 C++ physics projectile using opengl (glfw & glew)
 
+![Animated block](Animation.gif)
 
 Please feel free to help improve the code and layout.
 
